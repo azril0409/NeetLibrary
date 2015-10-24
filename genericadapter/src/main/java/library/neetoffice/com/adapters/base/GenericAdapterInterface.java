@@ -22,6 +22,8 @@ public interface GenericAdapterInterface<E> {
 
     void clear();
 
+    void setFilter(Filter<E> filter);
+
     List<E> getItems();
 
     E getItem(int position);
