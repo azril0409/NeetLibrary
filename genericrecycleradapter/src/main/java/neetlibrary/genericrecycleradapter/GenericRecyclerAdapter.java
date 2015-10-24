@@ -2,6 +2,7 @@ package neetlibrary.genericrecycleradapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import library.neetoffice.com.adapters.base.GenericAdapterInterface;
 public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<ViewWrapper> implements GenericAdapterInterface<E> {
     protected ArrayList<E> items;
     private Context context;
-    private Filter<E> filter = new Filter<E>(){
+    private Filter<E> filter = new Filter<E>() {
 
         @Override
         public boolean filter(E item) {
@@ -27,7 +28,8 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
 
     public GenericRecyclerAdapter(Context context, Collection<E> items) {
         this.context = context;
-        this.items = filter.init(new ArrayList<>(items));
+        this.items = new ArrayList<>(items);
+        filter.init(this);
     }
 
     public final Context getContext() {
@@ -43,6 +45,11 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
     public void onBindViewHolder(ViewWrapper viewWrapper, int position) {
         if (items.size() > position) {
             viewWrapper.getView().bind(items.get(position));
+        }
+        if(filter.filter(items.get(position))){
+            viewWrapper.view.setVisibility(View.VISIBLE);
+        }else {
+            viewWrapper.view.setVisibility(View.GONE);
         }
         if (getItemClickable(position)) {
             viewWrapper.getView().onItemClickable();
@@ -63,59 +70,69 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
 
     @Override
     public final void addAll(Collection<E> items) {
-        this.items.addAll(filter.init(items));
-        notifyDataSetChanged();
+        try {
+            this.items.addAll(items);
+        } catch (Exception e) {
+        } finally {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
     public final void setAll(Collection<E> items) {
-        this.items.clear();
-        this.items.addAll(filter.init(items));
-        notifyDataSetChanged();
+        try {
+            this.items.clear();
+            this.items.addAll(items);
+        } catch (Exception e) {
+        } finally {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
     public final void add(E item) {
-        if(filter.filter(item)){
+        try {
             items.add(item);
+        } catch (Exception e) {
+        } finally {
             notifyDataSetChanged();
         }
     }
 
     @Override
     public final void set(int index, E item) {
-        if(filter.filter(item)){
-            try {
-                items.set(index, item);
-            }catch (Exception e){
-            }finally {
-                notifyDataSetChanged();
-            }
+        try {
+            items.set(index, item);
+        } catch (Exception e) {
+        } finally {
+            notifyDataSetChanged();
         }
     }
 
     @Override
     public final void remove(E item) {
-        if(filter.filter(item)){
-            try {
-                items.remove(item);
-            }catch (Exception e){
-
-            }finally {
-                notifyDataSetChanged();
-            }
+        try {
+            items.remove(item);
+        } catch (Exception e) {
+        } finally {
+            notifyDataSetChanged();
         }
     }
 
     @Override
     public final void remove(int position) {
-
         remove(items.get(position));
     }
 
     @Override
     public final void clear() {
         items.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public final void setFilter(Filter<E> filter) {
+        this.filter = filter;
         notifyDataSetChanged();
     }
 

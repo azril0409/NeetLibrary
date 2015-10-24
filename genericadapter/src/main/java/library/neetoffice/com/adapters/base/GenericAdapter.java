@@ -13,11 +13,11 @@ import java.util.List;
 /**
  * Created by Deo-chainmeans on 2015/8/4.
  */
-public abstract class GenericAdapter<E, T> extends BaseAdapter implements GenericAdapterInterface<E>{
+public abstract class GenericAdapter<E, T> extends BaseAdapter implements GenericAdapterInterface<E> {
     private Context context;
     private ArrayList<E> items;
     private int layoutId;
-    private Filter<E> filter = new Filter<E>(){
+    private Filter<E> filter = new Filter<E>() {
 
         @Override
         public boolean filter(E item) {
@@ -27,8 +27,9 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
 
     public GenericAdapter(Context context, Collection<E> items, int layoutId) {
         this.context = context;
-        this.items = filter.init(new ArrayList<>(items));
+        this.items = new ArrayList<>(items);
         this.layoutId = layoutId;
+        filter.init(this);
     }
 
     public final Context getContext() {
@@ -41,47 +42,52 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
 
     @Override
     public final void addAll(Collection<E> items) {
-        this.items.addAll(filter.init(items));
-        notifyDataSetChanged();
+        try {
+            this.items.addAll(items);
+        } catch (Exception e) {
+        } finally {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
     public final void setAll(Collection<E> items) {
-        this.items.clear();
-        this.items.addAll(filter.init(items));
-        notifyDataSetChanged();
+        try {
+            this.items.clear();
+            this.items.addAll(items);
+        } catch (Exception e) {
+        } finally {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
     public final void add(E item) {
-        if(filter.filter(item)){
+        try {
             items.add(item);
+        } catch (Exception e) {
+        } finally {
             notifyDataSetChanged();
         }
     }
 
     @Override
     public final void set(int index, E item) {
-        if(filter.filter(item)){
-            try {
-                items.set(index, item);
-            }catch (Exception e){
-            }finally {
-                notifyDataSetChanged();
-            }
+        try {
+            items.set(index, item);
+        } catch (Exception e) {
+        } finally {
+            notifyDataSetChanged();
         }
     }
 
     @Override
     public final void remove(E item) {
-        if(filter.filter(item)){
-            try {
-                items.remove(item);
-            }catch (Exception e){
-
-            }finally {
-                notifyDataSetChanged();
-            }
+        try {
+            items.remove(item);
+        } catch (Exception e) {
+        } finally {
+            notifyDataSetChanged();
         }
     }
 
@@ -98,8 +104,8 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
 
     @Override
     public final void setFilter(Filter<E> filter) {
-        items = filter.init(this.filter.getItems());
         this.filter = filter;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -126,13 +132,18 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
     public View getView(int position, View convertView, ViewGroup parent) {
         T t;
         if (convertView == null) {
-            convertView = getLayoutInflater().inflate(layoutId, null,false);
+            convertView = getLayoutInflater().inflate(layoutId, null, false);
             t = onCreateTag(convertView);
             convertView.setTag(t);
         } else {
             t = (T) convertView.getTag();
         }
-        onBind(t, position);
+        if (filter.filter(items.get(position))) {
+            convertView.setVisibility(View.VISIBLE);
+            onBind(t, position);
+        } else {
+            convertView.setVisibility(View.GONE);
+        }
         return convertView;
     }
 
