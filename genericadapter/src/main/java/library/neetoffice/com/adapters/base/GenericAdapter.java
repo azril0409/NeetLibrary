@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -15,8 +17,9 @@ import java.util.List;
  */
 public abstract class GenericAdapter<E, T> extends BaseAdapter implements GenericAdapterInterface<E> {
     private Context context;
-    private ArrayList<E> items;
     private int layoutId;
+    private ArrayList<E> originalItems = new ArrayList<>();
+    private ArrayList<Integer> indexs = new ArrayList<>();
     private Filter<E> filter = new Filter<E>() {
 
         @Override
@@ -24,12 +27,19 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
             return true;
         }
     };
+    private final Comparator<Integer> sort = new Comparator<Integer>() {
+        @Override
+        public int compare(Integer lhs, Integer rhs) {
+            return lhs - rhs;
+        }
+    };
 
     public GenericAdapter(Context context, Collection<E> items, int layoutId) {
         this.context = context;
-        this.items = new ArrayList<>(items);
         this.layoutId = layoutId;
         filter.init(this);
+        this.originalItems.addAll(items);
+        reFilter();
     }
 
     public final Context getContext() {
@@ -42,31 +52,30 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
 
     @Override
     public final void addAll(Collection<E> items) {
-        try {
-            this.items.addAll(items);
-        } catch (Exception e) {
-        } finally {
-            notifyDataSetChanged();
+        int originalSize = originalItems.size();
+        originalItems.addAll(items);
+        for (int index = originalSize; index < originalItems.size(); index++) {
+            E originalItem = originalItems.get(index);
+            if (filter.filter(originalItem)) {
+                indexs.add(index);
+            }
         }
+        notifyDataSetChanged();
     }
 
     @Override
     public final void setAll(Collection<E> items) {
-        try {
-            this.items.clear();
-            this.items.addAll(items);
-        } catch (Exception e) {
-        } finally {
-            notifyDataSetChanged();
-        }
+        this.originalItems.clear();
+        this.originalItems.addAll(items);
+        reFilter();
+        notifyDataSetChanged();
     }
 
     @Override
     public final void add(E item) {
-        try {
-            items.add(item);
-        } catch (Exception e) {
-        } finally {
+        final boolean b =  originalItems.add(item);
+        if (b&&filter.filter(item)) {
+            indexs.add(originalItems.size() - 1);
             notifyDataSetChanged();
         }
     }
@@ -74,8 +83,20 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
     @Override
     public final void set(int index, E item) {
         try {
-            items.set(index, item);
+            originalItems.set(index, item);
+            if (filter.filter(item)) {
+                if (!indexs.contains(index)) {
+                    indexs.add(index);
+                    Collections.sort(indexs, sort);
+                }
+            } else {
+                if (indexs.contains(index)) {
+                    indexs.remove(indexs.indexOf(index));
+                    Collections.sort(indexs, sort);
+                }
+            }
         } catch (Exception e) {
+
         } finally {
             notifyDataSetChanged();
         }
@@ -84,43 +105,62 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
     @Override
     public final void remove(E item) {
         try {
-            items.remove(item);
+            originalItems.remove(item);
+            reFilter();
         } catch (Exception e) {
         } finally {
-            notifyDataSetChanged();
         }
     }
 
     @Override
     public final void remove(int position) {
-        remove(items.get(position));
+        try {
+            originalItems.remove(position);
+            reFilter();
+        } catch (Exception e) {
+        } finally {
+        }
     }
 
     @Override
     public final void clear() {
-        items.clear();
+        originalItems.clear();
+        indexs.clear();
         notifyDataSetChanged();
     }
 
     @Override
     public final void setFilter(Filter<E> filter) {
+        filter.init(this);
         this.filter = filter;
+        reFilter();
+    }
+
+    @Override
+    public void reFilter() {
+        indexs.clear();
+        for (int index = 0; index < this.originalItems.size(); index++) {
+            E originalItem = this.originalItems.get(index);
+            if (filter.filter(originalItem)) {
+                indexs.add(index);
+            }
+        }
         notifyDataSetChanged();
     }
 
     @Override
     public final List<E> getItems() {
-        return items;
+        return originalItems;
     }
 
     @Override
     public int getCount() {
-        return items.size();
+        return indexs.size();
     }
 
     @Override
     public E getItem(int position) {
-        return items.get(position);
+        return originalItems.get(indexs.get(position));
     }
 
     @Override
@@ -138,12 +178,7 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
         } else {
             t = (T) convertView.getTag();
         }
-        if (filter.filter(items.get(position))) {
-            convertView.setVisibility(View.VISIBLE);
-            onBind(t, position);
-        } else {
-            convertView.setVisibility(View.GONE);
-        }
+        onBind(t, position);
         return convertView;
     }
 
