@@ -164,6 +164,7 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
             notifyItemRemoved(i);
         }
         indexs.clear();
+        notifyDataSetChanged();
     }
 
     @Override
