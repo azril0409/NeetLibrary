@@ -75,7 +75,7 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
     }
 
     @Override
-    public final int getItemCount() {
+    public int getItemCount() {
         return indexs.size();
     }
 
@@ -208,7 +208,7 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
     }
 
     @Override
-    public final E getItem(int position) {
+    public E getItem(int position) {
         return originalItems.get(indexs.get(position));
     }
 }
