@@ -49,18 +49,22 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
 
     @Override
     public ViewWrapper onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d(getClass().getSimpleName(), "onCreateViewHolder");
-        return new ViewWrapper(onCreateItemView(parent, viewType));
+        CellView<E> cellView = onCreateItemView(parent, viewType);
+        cellView.setGenericAdapter(this);
+        return new ViewWrapper(cellView);
     }
 
     @Override
     public void onBindViewHolder(ViewWrapper viewWrapper, int position) {
-        Log.d(getClass().getSimpleName(), "onBindViewHolder position = " + position);
         if (indexs.size() > position) {
-            viewWrapper.getView().bind(originalItems.get(indexs.get(position)));
+            final E e = getItem(position);
+            viewWrapper.getView().onBindViewHolder(e);
+            viewWrapper.getView().bind(e);
         }
         if (getItemClickable(position)) {
-            viewWrapper.getView().onItemClickable();
+            viewWrapper.getView().onItemClickable(true);
+        } else {
+            viewWrapper.getView().onItemClickable(false);
         }
     }
 
@@ -71,10 +75,9 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
     }
 
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return indexs.size();
     }
-
 
     @Override
     public final void addAll(Collection<E> items) {
@@ -205,7 +208,7 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
     }
 
     @Override
-    public E getItem(int position) {
+    public final E getItem(int position) {
         return originalItems.get(indexs.get(position));
     }
 }
