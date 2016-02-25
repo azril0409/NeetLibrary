@@ -1,6 +1,7 @@
 package neetlibrary.genericrecycleradapter;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -48,11 +49,19 @@ public abstract class CellView<E> extends FrameLayout {
     public void bind(E e) {
     }
 
+    public String getString(@StringRes int resId) {
+        return getContext().getString(resId);
+    }
+
+    public String getString(@StringRes int resId, Object... formatArgs) {
+        return getContext().getString(resId, formatArgs);
+    }
+
     private class Listener implements OnClickListener {
         private E data;
 
         private Listener(E data) {
-            this.data =data;
+            this.data = data;
         }
 
         @Override

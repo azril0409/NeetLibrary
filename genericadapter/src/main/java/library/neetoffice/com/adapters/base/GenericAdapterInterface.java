@@ -1,6 +1,7 @@
 package library.neetoffice.com.adapters.base;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -18,13 +19,15 @@ public interface GenericAdapterInterface<E> {
 
     void remove(E item);
 
-    void remove(int position);
+    E remove(int position);
 
     void clear();
 
     void setFilter(Filter<E> filter);
 
-    void reFilter();
+    void setSort(Comparator<E> sort);
+
+    void refresh();
 
     List<E> getItems();
 

@@ -27,19 +27,27 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
             return true;
         }
     };
-    private final Comparator<Integer> sort = new Comparator<Integer>() {
+    private final Comparator<Integer> indexSort = new Comparator<Integer>() {
         @Override
         public int compare(Integer lhs, Integer rhs) {
-            return lhs - rhs;
+            if (sort != null) {
+                synchronized (sort) {
+                    final E elhs = originalItems.get(lhs);
+                    final E erhs = originalItems.get(rhs);
+                    return sort.compare(elhs, erhs);
+                }
+            } else {
+                return lhs - rhs;
+            }
         }
     };
+    private Comparator<E> sort;
 
     public GenericAdapter(Context context, Collection<E> items, int layoutId) {
         this.context = context;
         this.layoutId = layoutId;
-        filter.init(this);
         this.originalItems.addAll(items);
-        reFilter();
+        refresh();
     }
 
     public final Context getContext() {
@@ -67,14 +75,15 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
     public final void setAll(Collection<E> items) {
         this.originalItems.clear();
         this.originalItems.addAll(items);
-        reFilter();
+        refresh();
         notifyDataSetChanged();
     }
 
     @Override
     public final void add(E item) {
-        final boolean b =  originalItems.add(item);
-        if (b&&filter.filter(item)) {
+        final boolean b = originalItems.add(item);
+
+        if (b && filter.filter(item)) {
             indexs.add(originalItems.size() - 1);
             notifyDataSetChanged();
         }
@@ -87,12 +96,12 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
             if (filter.filter(item)) {
                 if (!indexs.contains(index)) {
                     indexs.add(index);
-                    Collections.sort(indexs, sort);
+                    Collections.sort(indexs, indexSort);
                 }
             } else {
                 if (indexs.contains(index)) {
                     indexs.remove(indexs.indexOf(index));
-                    Collections.sort(indexs, sort);
+                    Collections.sort(indexs, indexSort);
                 }
             }
         } catch (Exception e) {
@@ -106,20 +115,22 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
     public final void remove(E item) {
         try {
             originalItems.remove(item);
-            reFilter();
+            refresh();
         } catch (Exception e) {
         } finally {
         }
     }
 
     @Override
-    public final void remove(int position) {
+    public final E remove(int position) {
         try {
-            originalItems.remove(position);
-            reFilter();
+            E e = originalItems.remove(position);
+            refresh();
+            return e;
         } catch (Exception e) {
         } finally {
         }
+        return null;
     }
 
     @Override
@@ -131,13 +142,18 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
 
     @Override
     public final void setFilter(Filter<E> filter) {
-        filter.init(this);
         this.filter = filter;
-        reFilter();
+        refresh();
     }
 
     @Override
-    public void reFilter() {
+    public void setSort(Comparator<E> sort) {
+        this.sort = sort;
+        refresh();
+    }
+
+    @Override
+    public void refresh() {
         indexs.clear();
         for (int index = 0; index < this.originalItems.size(); index++) {
             E originalItem = this.originalItems.get(index);
@@ -145,6 +161,7 @@ public abstract class GenericAdapter<E, T> extends BaseAdapter implements Generi
                 indexs.add(index);
             }
         }
+        Collections.sort(indexs, indexSort);
         notifyDataSetChanged();
     }
 

@@ -10,16 +10,7 @@ import java.util.List;
 /**
  * Created by Mac on 2015/10/24.
  */
-public abstract class Filter<E> {
-    private GenericAdapterInterface genericAdapterInterface;
+public interface Filter<E> {
 
-    public final void init(GenericAdapterInterface genericAdapterInterface) {
-        this.genericAdapterInterface = genericAdapterInterface;
-    }
-
-    public final void reFilter() {
-        genericAdapterInterface.reFilter();
-    }
-
-    public abstract boolean filter(E item);
+    boolean filter(E item);
 }

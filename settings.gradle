@@ -1,2 +1,2 @@
-include ':genericadapter', ':androidcamerautil', ':genericrecycleradapter'
+include ':genericadapter', ':androidcamerautil', ':genericrecycleradapter', ':genericadaptersample'
 
