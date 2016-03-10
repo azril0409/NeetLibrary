@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 
-import library.neetoffice.com.adapters.base.Filter;
-import library.neetoffice.com.adapters.base.GenericAdapter;
+import library.neetoffice.com.genericadapter.base.Filter;
+import library.neetoffice.com.genericadapter.base.GenericAdapter;
 
 /**
  * Created by Deo on 2016/2/25.

@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+}
+
+def libname = 'NeetDAO_100.jar'
+task clearAar(type: Delete) {
+    delete '../librarys/NeetDAO/'
+}
+task makeAar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('../librarys/NeetDAO')
+    include('classes.jar')
+    include('jni/**')
+    rename('classes.jar', libname)
+}
+
+makeAar.dependsOn(clearAar, build)

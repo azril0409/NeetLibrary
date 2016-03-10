@@ -1,13 +1,17 @@
 package app.neetoffice.com.genericadaptersample;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,9 +20,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 
-import library.neetoffice.com.adapters.base.Filter;
-import neetlibrary.genericrecycleradapter.CellView;
-import neetlibrary.genericrecycleradapter.GenericRecyclerAdapter;
+import library.neetoffice.com.genericadapter.NormalHeaderDecoration;
+import library.neetoffice.com.genericadapter.StickyHeaderAdapter;
+import library.neetoffice.com.genericadapter.StickyHeaderDecoration;
+import library.neetoffice.com.genericadapter.base.Filter;
+import library.neetoffice.com.genericadapter.CellView;
+import library.neetoffice.com.genericadapter.GenericRecyclerAdapter;
 
 /**
  * Created by Deo on 2016/2/25.
@@ -51,7 +58,9 @@ public class RecyclerListActivity extends AppCompatActivity implements Toolbar.O
         toolbar.setOnMenuItemClickListener(this);
         adapter = new Adapter(this, Arrays.asList(getResources().getStringArray(R.array.items)));
         adapter.setFilter(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new NormalHeaderDecoration<String>(adapter));
         editText.addTextChangedListener(this);
     }
 
@@ -89,7 +98,7 @@ public class RecyclerListActivity extends AppCompatActivity implements Toolbar.O
 
     @Override
     public boolean filter(String item) {
-        if(text==null){
+        if (text == null) {
             return true;
         }
         return item.contains(text);
@@ -111,7 +120,7 @@ public class RecyclerListActivity extends AppCompatActivity implements Toolbar.O
         }
     }
 
-    private static class Adapter extends GenericRecyclerAdapter<String> {
+    private static class Adapter extends GenericRecyclerAdapter<String> implements StickyHeaderAdapter {
 
         public Adapter(Context context, Collection<String> items) {
             super(context, items);
@@ -120,6 +129,25 @@ public class RecyclerListActivity extends AppCompatActivity implements Toolbar.O
         @Override
         public CellView<String> onCreateItemView(ViewGroup parent, int viewType) {
             return new SrtingCell(getContext());
+        }
+
+        @Override
+        public long getHeaderId(int position) {
+            return getItem(position).charAt(0);
+        }
+
+        @Override
+        public View onCreateHeaderViewHolder(ViewGroup parent) {
+            SrtingCell cell = new SrtingCell(getContext());
+            return cell;
+        }
+
+        @Override
+        public void onBindHeaderViewHolder(View viewholder, int position) {
+            long id = getHeaderId(position);
+            SrtingCell cell = (SrtingCell) viewholder;
+            cell.setBackgroundColor(Color.BLUE);
+            cell.bind(String.valueOf((int)id));
         }
     }
 }

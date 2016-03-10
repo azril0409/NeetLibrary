@@ -15,7 +15,7 @@ android {
         }
     }
 }
-def libname = 'GenericRecyclerAdapter_101.jar'
+def libname = 'GenericRecyclerAdapter_103.jar'
 task clearAar(type: Delete) {
     delete '../librarys/genericrecycleradapter/'
 }
