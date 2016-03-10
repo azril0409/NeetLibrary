@@ -9,7 +9,6 @@ import library.neetoffice.com.xmlparser.Tag;
 /**
  * Created by Deo on 2016/3/9.
  */
-@Tag
 public class StringValue implements Parcelable {
     @Element
     String value;

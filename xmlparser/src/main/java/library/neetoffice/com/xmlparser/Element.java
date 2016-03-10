@@ -11,7 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Element {
-    Class model() default DefaultElement.class;
 
-    String name() default "";
 }

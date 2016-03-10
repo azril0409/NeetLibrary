@@ -44,66 +44,14 @@ public class SAXPraserHelper extends DefaultHandler {
 
     private void analyzeField(Object object, Field field, String xmlPath) throws XMLParserException {
         field.setAccessible(true);
+        final Tag tag = field.getAnnotation(Tag.class);
         final Element element = field.getAnnotation(Element.class);
         final Attribute attribute = field.getAnnotation(Attribute.class);
-        if (element != null) {
+        if (tag != null) {
+            addTag(field,tag,xmlPath);
+        } else if(element!=null){
             final Class type = field.getType();
-            if (type.getAnnotation(Tag.class) != null) {
-                try {
-                    String name = element.name();
-                    if (name.length() == 0) {
-                        name = field.getName();
-                    }
-                    String key = xmlPath + name + "_";
-                    final Object fieldObject = type.newInstance();
-                    field.set(object, fieldObject);
-                    tagTemp.put(key, fieldObject);
-                    final Field[] fields = field.getType().getDeclaredFields();
-                    for (Field f : fields) {
-                        analyzeField(fieldObject, f, key);
-                    }
-                } catch (InstantiationException e) {
-                    throw new XMLParserException(type.getName() + " doesn't have no-arg(default) constructor");
-                } catch (IllegalAccessException e) {
-                    throw new XMLParserException(e.getMessage());
-                }
-            } else if (type == Collection.class) {
-                try {
-                    addCollection(new ArrayList(), field, element, xmlPath);
-                } catch (IllegalAccessException e) {
-                    throw new XMLParserException(e.getMessage());
-                }
-            } else if (type == List.class) {
-                try {
-                    addCollection(new ArrayList(), field, element, xmlPath);
-                } catch (IllegalAccessException e) {
-                    throw new XMLParserException(e.getMessage());
-                }
-            } else if (type == ArrayList.class) {
-                try {
-                    addCollection(new ArrayList(), field, element, xmlPath);
-                } catch (IllegalAccessException e) {
-                    throw new XMLParserException(e.getMessage());
-                }
-            } else if (type == Set.class) {
-                try {
-                    addCollection(new HashSet(), field, element, xmlPath);
-                } catch (IllegalAccessException e) {
-                    throw new XMLParserException(e.getMessage());
-                }
-            } else if (type == HashSet.class) {
-                try {
-                    addCollection(new HashSet(), field, element, xmlPath);
-                } catch (IllegalAccessException e) {
-                    throw new XMLParserException(e.getMessage());
-                }
-            } else if (type == TreeSet.class) {
-                try {
-                    addCollection(new TreeSet(), field, element, xmlPath);
-                } catch (IllegalAccessException e) {
-                    throw new XMLParserException(e.getMessage());
-                }
-            } else if (type == ElementMap.class) {
+            if (type == ElementMap.class) {
                 try {
                     ElementMap map = new ElementMap();
                     field.set(object, map);
@@ -111,32 +59,98 @@ public class SAXPraserHelper extends DefaultHandler {
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
-            } else {
+            }else  if (Object2StringHelper.isElement(type)) {
                 elementTemp.put(xmlPath, field);
             }
         } else if (attribute != null) {
             attributeTemp.put(xmlPath + attribute.value(), field);
+        }else{
+            final Tag typeTag = field.getType().getAnnotation(Tag.class);
+            if (typeTag!=null){
+                addTag(field,typeTag,xmlPath);
+            }
         }
     }
 
-    private void addCollection(Collection collection, Field field, Element element, String xmlPath) throws IllegalAccessException {
-        field.set(object, collection);
-        if (element.model() != DefaultElement.class) {
+    private void addTag(Field field, Tag tag, String xmlPath){
+        final Class type = field.getType();
+        if (type == Collection.class) {
             try {
-                element.model().newInstance();
-            } catch (InstantiationException e) {
-                throw new XMLParserException(element.model() + " doesn't have no-arg(default) constructor");
+                addCollection(new ArrayList(), field, tag, xmlPath);
+            } catch (IllegalAccessException e) {
+                throw new XMLParserException(e.getMessage());
             }
-            final Tag tag = (Tag) element.model().getAnnotation(Tag.class);
-            if (tag != null) {
-                String name = element.name();
+        } else if (type == List.class) {
+            try {
+                addCollection(new ArrayList(), field, tag, xmlPath);
+            } catch (IllegalAccessException e) {
+                throw new XMLParserException(e.getMessage());
+            }
+        } else if (type == ArrayList.class) {
+            try {
+                addCollection(new ArrayList(), field, tag, xmlPath);
+            } catch (IllegalAccessException e) {
+                throw new XMLParserException(e.getMessage());
+            }
+        } else if (type == Set.class) {
+            try {
+                addCollection(new HashSet(), field, tag, xmlPath);
+            } catch (IllegalAccessException e) {
+                throw new XMLParserException(e.getMessage());
+            }
+        } else if (type == HashSet.class) {
+            try {
+                addCollection(new HashSet(), field, tag, xmlPath);
+            } catch (IllegalAccessException e) {
+                throw new XMLParserException(e.getMessage());
+            }
+        } else if (type == TreeSet.class) {
+            try {
+                addCollection(new TreeSet(), field, tag, xmlPath);
+            } catch (IllegalAccessException e) {
+                throw new XMLParserException(e.getMessage());
+            }
+        }else{
+            try {
+                String name = tag.value();
                 if (name.length() == 0) {
                     name = field.getName();
                 }
+                Object fieldObject;
+                if(tag.model()==DefaultElement.class){
+                    fieldObject = field.getType().newInstance();
+                }else{
+                    fieldObject = tag.model().newInstance();
+                }
                 String key = xmlPath + name + "_";
-                typeTemp.put(key, element.model());
-                collectionTemp.put(key, collection);
+                field.set(object, fieldObject);
+                tagTemp.put(key, fieldObject);
+                final Field[] fields = field.getType().getDeclaredFields();
+                for (Field f : fields) {
+                    analyzeField(fieldObject, f, key);
+                }
+            } catch (InstantiationException e) {
+                throw new XMLParserException(type.getName() + " doesn't have no-arg(default) constructor");
+            } catch (IllegalAccessException e) {
+                throw new XMLParserException(e.getMessage());
             }
+        }}
+
+    private void addCollection(Collection collection, Field field, Tag tag, String xmlPath) throws IllegalAccessException {
+        field.set(object, collection);
+        if (tag.model() != DefaultElement.class) {
+            try {
+                tag.model().newInstance();
+            } catch (InstantiationException e) {
+                throw new XMLParserException(tag.model() + " doesn't have no-arg(default) constructor");
+            }
+            String name = tag.value();
+            if (name.length() == 0) {
+                name = field.getName();
+            }
+            String key = xmlPath + name + "_";
+            typeTemp.put(key, tag.model());
+            collectionTemp.put(key, collection);
         }
     }
 

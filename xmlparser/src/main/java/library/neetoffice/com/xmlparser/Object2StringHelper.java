@@ -9,6 +9,22 @@ import java.util.Collection;
  */
 class Object2StringHelper {
 
+     static boolean isElement(Class type){
+        return (type == Boolean.class
+                || type == boolean.class
+                || type == Integer.class
+                || type == int.class
+                || type == Float.class
+                || type == float.class
+                || type == Double.class
+                || type == double.class
+                || type == Long.class
+                || type == long.class
+                || type == byte[].class
+                || type == char[].class
+                || type == String.class);
+    }
+
     static String toXML(Object object) {
         if (object == null) {
             return null;
@@ -30,12 +46,20 @@ class Object2StringHelper {
         final ArrayList<Field> attributeFields = new ArrayList<>();
         final ArrayList<Field> elementFields = new ArrayList<>();
         for (Field field : object.getClass().getDeclaredFields()) {
+            final Tag tagAnnotation = field.getAnnotation(Tag.class);
             final Attribute attribute = field.getAnnotation(Attribute.class);
             final Element element = field.getAnnotation(Element.class);
             if (attribute != null) {
                 attributeFields.add(field);
             } else if (element != null) {
                 elementFields.add(field);
+            } else if (tagAnnotation != null) {
+                elementFields.add(field);
+            }else{
+                final Tag typeTag = field.getType().getAnnotation(Tag.class);
+                if(typeTag!=null){
+                    elementFields.add(field);
+                }
             }
         }
         stringBuffer.append("<");
@@ -66,19 +90,7 @@ class Object2StringHelper {
         for (Field elementField : elementFields) {
             elementField.setAccessible(true);
             try {
-                if (elementField.getType() == Boolean.class
-                        || elementField.getType() == boolean.class
-                        || elementField.getType() == Integer.class
-                        || elementField.getType() == int.class
-                        || elementField.getType() == Float.class
-                        || elementField.getType() == float.class
-                        || elementField.getType() == Double.class
-                        || elementField.getType() == double.class
-                        || elementField.getType() == Long.class
-                        || elementField.getType() == long.class
-                        || elementField.getType() == byte[].class
-                        || elementField.getType() == char[].class
-                        || elementField.getType() == String.class) {
+                if (isElement(elementField.getType())) {
                     final Object value = elementField.get(object);
                     elementValue.append(value != null ? value : "");
                 } else if (elementField.getType() == ElementMap.class) {
@@ -98,8 +110,11 @@ class Object2StringHelper {
                     }
                 } else {
                     final Object o = elementField.get(object);
-                    final Element element = elementField.getAnnotation(Element.class);
-                    String name = element.name();
+                    Tag tagAnnotation = elementField.getAnnotation(Tag.class);
+                    if(tagAnnotation==null){
+                        tagAnnotation = elementField.getType().getAnnotation(Tag.class);
+                    }
+                    String name = tagAnnotation.value();
                     if (name.length() == 0) {
                         name = elementField.getName();
                     }
@@ -111,9 +126,7 @@ class Object2StringHelper {
                                 }
                             }
                         } else {
-                            if (elementField.getType().getAnnotation(Tag.class) != null) {
-                                elementValue.append(toXML(o, name));
-                            }
+                            elementValue.append(toXML(o, name));
                         }
                     }
                 }

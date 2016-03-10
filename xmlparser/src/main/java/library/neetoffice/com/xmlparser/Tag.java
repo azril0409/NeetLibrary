@@ -9,7 +9,8 @@ import java.lang.annotation.Target;
  * Created by Deo on 2016/3/1.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE,ElementType.FIELD})
 public @interface Tag {
+    Class model() default DefaultElement.class;
     String value() default "";
 }
