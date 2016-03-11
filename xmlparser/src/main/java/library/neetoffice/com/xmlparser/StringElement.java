@@ -3,36 +3,33 @@ package library.neetoffice.com.xmlparser;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import library.neetoffice.com.xmlparser.Element;
-import library.neetoffice.com.xmlparser.Tag;
-
 /**
  * Created by Deo on 2016/3/9.
  */
-public class StringValue implements Parcelable {
+public final class StringElement implements Parcelable {
     @Element
     String value;
 
-    public StringValue() {
+    public StringElement() {
     }
 
-    public StringValue(String value) {
+    public StringElement(String value) {
         this.value = value;
     }
 
-    protected StringValue(Parcel in) {
+    protected StringElement(Parcel in) {
         value = in.readString();
     }
 
-    public static final Creator<StringValue> CREATOR = new Creator<StringValue>() {
+    public static final Creator<StringElement> CREATOR = new Creator<StringElement>() {
         @Override
-        public StringValue createFromParcel(Parcel in) {
-            return new StringValue(in);
+        public StringElement createFromParcel(Parcel in) {
+            return new StringElement(in);
         }
 
         @Override
-        public StringValue[] newArray(int size) {
-            return new StringValue[size];
+        public StringElement[] newArray(int size) {
+            return new StringElement[size];
         }
     };
 
