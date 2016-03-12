@@ -23,8 +23,7 @@ public class XMLParser {
         try {
             object = classOfT.newInstance();
             final SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = null;
-            parser = factory.newSAXParser();
+            final SAXParser parser = factory.newSAXParser();
             final XMLReader xmlReader = parser.getXMLReader();
             SAXPraserHelper handler = new SAXPraserHelper(object);
             xmlReader.setContentHandler(handler);
@@ -45,4 +44,5 @@ public class XMLParser {
     public String toXML(Object object) {
         return Object2StringHelper.toXML(object);
     }
+
 }

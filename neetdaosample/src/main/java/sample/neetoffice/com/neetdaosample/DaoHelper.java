@@ -2,8 +2,6 @@ package sample.neetoffice.com.neetdaosample;
 
 import android.content.Context;
 
-import java.lang.reflect.Method;
-
 import library.neetoffice.com.neetdao.Dao;
 import library.neetoffice.com.neetdao.DatabaseHelper;
 

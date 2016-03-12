@@ -24,7 +24,7 @@ android {
 dependencies {
 }
 
-def libname = 'NeetDAO_100.jar'
+def libname = 'NeetDAO_101.jar'
 task clearAar(type: Delete) {
     delete '../librarys/NeetDAO/'
 }

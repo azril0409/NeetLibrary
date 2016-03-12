@@ -6,8 +6,10 @@ import android.os.Parcelable;
 /**
  * Created by Deo on 2016/3/10.
  */
-public final class ElementValue implements Parcelable {
-    StringMap attribute = new StringMap();
+public final class ElementValue extends ElementMap implements Parcelable {
+    @Attribute
+    AttributeMap attribute = new AttributeMap();
+    @Element
     String value = "";
 
     protected ElementValue() {
@@ -15,7 +17,7 @@ public final class ElementValue implements Parcelable {
     }
 
     protected ElementValue(Parcel in) {
-        attribute = (StringMap) in.readSerializable();
+        attribute = (AttributeMap) in.readSerializable();
         value = in.readString();
     }
 
@@ -31,7 +33,7 @@ public final class ElementValue implements Parcelable {
         }
     };
 
-    public StringMap getAttribute() {
+    public AttributeMap getAttributes() {
         return attribute;
     }
 

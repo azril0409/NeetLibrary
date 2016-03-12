@@ -16,35 +16,39 @@ import java.util.TreeSet;
 /**
  * Created by Deo on 2016/3/1.
  */
-public class SAXPraserHelper extends DefaultHandler {
+class SAXPraserHelper extends DefaultHandler {
     final Object object;
     private final ArrayList<String> qNames = new ArrayList<>();
-    private HashMap<String, Class> typeTemp = new HashMap<>();
-    private HashMap<String, Collection> collectionTemp = new HashMap<>();
-    private HashMap<String, Object> tagTemp = new HashMap<>();
-    private HashMap<String, Field> attributeTemp = new HashMap<>();
-    private HashMap<String, Field> elementTemp = new HashMap<>();
-    private HashMap<String, ElementMap> elementMapTemp = new HashMap<>();
-    private HashMap<String,StringBuffer> characters = new HashMap<>();
+    private final HashMap<String, Class> typeTemp = new HashMap<>();
+    private final HashMap<String, Collection> collectionTemp = new HashMap<>();
+    private final HashMap<String, Object> tagTemp = new HashMap<>();
+    private final HashMap<String, Field> attributeTemp = new HashMap<>();
+    private final HashMap<String, Field> elementTemp = new HashMap<>();
+    private final HashMap<String, AttributeMap> attributeMapTemp = new HashMap<>();
+    private final HashMap<String, ElementMap> elementMapTemp = new HashMap<>();
+    private final HashMap<String, StringBuffer> characters = new HashMap<>();
 
-    public SAXPraserHelper(Object object) throws XMLParserException {
+    SAXPraserHelper(Object object) throws XMLParserException {
         this.object = object;
         final Tag tag = object.getClass().getAnnotation(Tag.class);
-        String name;
-        if (tag.value().length() == 0) {
-            name = object.getClass().getSimpleName();
-        } else {
-            name = tag.value();
+        final String name = Object2StringHelper.getTagName(tag, object);
+        final String key = name + "_";
+        tagTemp.put(key, object);
+        if (object instanceof ElementMap) {
+            elementMapTemp.put(key, (ElementMap) object);
         }
-        tagTemp.put(name + "_", object);
         final Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             analyzeField(object, field, name + "_");
         }
     }
 
+
     private void analyzeField(Object object, Field field, String xmlPath) throws XMLParserException {
         field.setAccessible(true);
+        if (object instanceof ElementMap) {
+            elementMapTemp.put(xmlPath, (ElementMap) object);
+        }
         final Tag tag = field.getAnnotation(Tag.class);
         final Element element = field.getAnnotation(Element.class);
         final Attribute attribute = field.getAnnotation(Attribute.class);
@@ -88,17 +92,14 @@ public class SAXPraserHelper extends DefaultHandler {
                 }
             } else {
                 try {
-                    String name = tag.value();
-                    if (name.length() == 0) {
-                        name = field.getName();
-                    }
-                    Object fieldObject;
+                    final String name = Object2StringHelper.getTagName(tag, field);
+                    final Object fieldObject;
                     if (tag.model() == DefaultElement.class) {
                         fieldObject = field.getType().newInstance();
                     } else {
                         fieldObject = tag.model().newInstance();
                     }
-                    String key = xmlPath + name + "_";
+                    final String key = xmlPath + name + "_";
                     field.set(object, fieldObject);
                     tagTemp.put(key, fieldObject);
                     final Field[] fields = field.getType().getDeclaredFields();
@@ -113,35 +114,37 @@ public class SAXPraserHelper extends DefaultHandler {
             }
         } else if (element != null) {
             final Class type = field.getType();
-            if (type == ElementMap.class) {
-                try {
-                    ElementMap map = new ElementMap();
-                    field.set(object, map);
-                    elementMapTemp.put(xmlPath, map);
-                } catch (IllegalAccessException e) {
-                    throw new XMLParserException(e.getMessage());
-                }
-            } else if (Object2StringHelper.isElement(type)) {
+            if (Object2StringHelper.isElement(type)) {
                 elementTemp.put(xmlPath, field);
             }
         } else if (attribute != null) {
-            attributeTemp.put(xmlPath + attribute.value(), field);
+            if (Object2StringHelper.isElement(field.getType())) {
+                attributeTemp.put(xmlPath + Object2StringHelper.getAttributeName(attribute, field), field);
+            } else if (field.getType() == AttributeMap.class) {
+                try {
+                    AttributeMap attributeMap = new AttributeMap();
+                    field.set(object, attributeMap);
+                    attributeMapTemp.put(xmlPath, attributeMap);
+                } catch (IllegalAccessException e) {
+                    throw new XMLParserException(e.getMessage());
+                }
+            }
         } else {
-            Class<?> typeClass = field.getType();
+            final Class<?> typeClass = field.getType();
             final Tag typeTag = typeClass.getAnnotation(Tag.class);
             if (typeTag != null) {
                 try {
                     String name = tag.value();
                     if (name.length() == 0) {
-                        name = typeClass.getSimpleName();
+                        name = field.getName();
                     }
-                    Object fieldObject;
+                    final Object fieldObject;
                     if (tag.model() == DefaultElement.class) {
                         fieldObject = field.getType().newInstance();
                     } else {
                         fieldObject = tag.model().newInstance();
                     }
-                    String key = xmlPath + name + "_";
+                    final String key = xmlPath + name + "_";
                     field.set(object, fieldObject);
                     tagTemp.put(key, fieldObject);
                     final Field[] fields = field.getType().getDeclaredFields();
@@ -169,7 +172,7 @@ public class SAXPraserHelper extends DefaultHandler {
             if (name.length() == 0) {
                 name = field.getName();
             }
-            String key = xmlPath + name + "_";
+            final String key = xmlPath + name + "_";
             typeTemp.put(key, tag.model());
             collectionTemp.put(key, collection);
         }
@@ -254,22 +257,26 @@ public class SAXPraserHelper extends DefaultHandler {
         final String qName = qNames.get(qNames.size() - 1);
         final String xmlPath = key.substring(0, key.length() - qName.length() - 1);
         if (elementTemp.containsKey(key) && tagTemp.containsKey(key)) {
-            StringBuffer character;
-            if(characters.containsKey(key)){
-              character = characters.get(key);
-            }else {
+            final StringBuffer character;
+            if (characters.containsKey(key)) {
+                character = characters.get(key);
+            } else {
                 character = new StringBuffer();
-                characters.put(key,character);
+                characters.put(key, character);
             }
             character.append(element);
         } else if (elementMapTemp.containsKey(xmlPath)) {
             final ElementMap map = elementMapTemp.get(xmlPath);
             if (map.containsKey(qName)) {
-                final ElementValue elementValue = map.get(qName);
-                if (elementValue.value != null) {
-                    elementValue.value += element;
-                } else {
-                    elementValue.value = element;
+                try {
+                    final ArrayList<ElementValue> list = map.get(qName);
+                    final ElementValue elementValue = list.get(list.size() - 1);
+                    if (elementValue.value != null) {
+                        elementValue.value += element;
+                    } else {
+                        elementValue.value = element;
+                    }
+                } catch (IndexOutOfBoundsException e) {
                 }
             }
         }
@@ -278,6 +285,7 @@ public class SAXPraserHelper extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
+        Object newElement = null;
         final String xmlPath = getKey(qNames);
         qNames.add(qName);
         final String key = getKey(qNames);
@@ -286,6 +294,7 @@ public class SAXPraserHelper extends DefaultHandler {
                 final Class type = typeTemp.get(key);
                 final Collection collection = collectionTemp.get(key);
                 final Object tagObject = type.newInstance();
+                newElement = tagObject;
                 collection.add(tagObject);
                 tagTemp.put(key, tagObject);
                 final Field[] fields = type.getDeclaredFields();
@@ -298,28 +307,50 @@ public class SAXPraserHelper extends DefaultHandler {
                 throw new SAXException(e.getMessage());
             }
         } else if (elementTemp.containsKey(key) && tagTemp.containsKey(key)) {
+            newElement = elementTemp.get(key);
         } else if (elementMapTemp.containsKey(xmlPath)) {
             final ElementMap map = elementMapTemp.get(xmlPath);
-            map.put(qName, new ElementValue());
+            newElement = new ElementValue();
+            elementMapTemp.put(key, (ElementMap) newElement);
+            if (map.containsKey(qName)) {
+                final ArrayList<ElementValue> list = map.get(qName);
+                list.add((ElementValue) newElement);
+            } else {
+                final ArrayList<ElementValue> list = new ArrayList<>();
+                list.add((ElementValue) newElement);
+                map.put(qName, list);
+            }
         }
-
+        if (newElement == null) {
+            return;
+        }
         final int length = attributes.getLength();
         for (int index = 0; index < length; index++) {
-            if (attributeTemp.containsKey(key + attributes.getQName(index)) && tagTemp.containsKey(key)) {
+            final String attributeName = attributes.getQName(index);
+            final String attributeKey = key + attributeName;
+            if (attributeTemp.containsKey(attributeKey)) {
                 try {
-                    final Object object = tagTemp.get(key);
-                    final Field field = attributeTemp.get(key + attributes.getQName(index));
+                    final Field field = attributeTemp.get(key + attributeName);
                     final String value = attributes.getValue(index);
-                    addFieldValue(field, object, value);
+                    if (field.getType() == AttributeMap.class) {
+                        final AttributeMap map = (AttributeMap) field.get(object);
+                        map.put(attributeName, value.trim());
+                    } else {
+                        addFieldValue(field, newElement, value);
+                    }
                 } catch (Exception e) {
                     throw new SAXException(e.getMessage());
                 }
-            } else if (elementMapTemp.containsKey(xmlPath)) {
-                final ElementMap map = elementMapTemp.get(xmlPath);
-                final ElementValue elementValue = map.get(qName);
-                final String name = attributes.getQName(index);
+            } else if (attributeMapTemp.containsKey(key)) {
                 final String value = attributes.getValue(index);
-                elementValue.addAttribute(name, value);
+                final AttributeMap attributeMap = attributeMapTemp.get(key);
+                attributeMap.put(attributeName, value.trim());
+            } else if (elementMapTemp.containsKey(xmlPath)) {
+                if (newElement instanceof ElementValue) {
+                    final ElementValue elementValue = (ElementValue) newElement;
+                    final String value = attributes.getValue(index);
+                    elementValue.addAttribute(attributeName, value.trim());
+                }
             }
         }
     }
@@ -327,13 +358,13 @@ public class SAXPraserHelper extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
-        String key = getKey(qNames);
+        final String key = getKey(qNames);
         if (characters.containsKey(key)) {
             final Object object = tagTemp.get(key);
             Field field = elementTemp.get(key);
             StringBuffer stringBuffer = characters.get(key);
             try {
-                addFieldValue(field,object,stringBuffer.toString());
+                addFieldValue(field, object, stringBuffer.toString());
             } catch (IllegalAccessException e) {
             }
             characters.remove(key);

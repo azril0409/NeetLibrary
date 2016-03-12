@@ -34,7 +34,6 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
 
     static String getTable(Class<?> modelClass) {
@@ -42,7 +41,7 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
         if (databaseTable == null) {
             throw new NeetSQLException("No @DatabaseTable");
         }
-        if (databaseTable.tableName().isEmpty()) {
+        if (databaseTable.tableName().length()==0) {
             Log.d("Dao","getTable return : "+modelClass.getSimpleName());
             return modelClass.getSimpleName();
         } else {
@@ -56,7 +55,7 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
         if (databaseField == null) {
             throw new NeetSQLException("No @DatabaseField");
         }
-        if (databaseField.columnName().isEmpty()) {
+        if (databaseField.columnName().length()==0) {
             Log.d("Dao","getColumnName return : "+field.getName());
             return field.getName();
         } else {
@@ -66,7 +65,7 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public <E> Dao<E> getDao(Class<E> modelClass) {
-        return new Dao<>(getWritableDatabase(), modelClass);
+        return new DaoImpl<>(getWritableDatabase(), modelClass);
     }
 
     private static void createTable(SQLiteDatabase db, Class<?> modelClass) throws NeetSQLException {

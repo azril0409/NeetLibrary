@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 class Object2StringHelper {
 
-     static boolean isElement(Class type){
+    static boolean isElement(Class type) {
         return (type == Boolean.class
                 || type == boolean.class
                 || type == Integer.class
@@ -33,10 +33,26 @@ class Object2StringHelper {
         return toXML(object, getTagName(tag, object));
     }
 
-    private static String getTagName(Tag tag, Object object) {
+    static String getTagName(Tag tag, Object object) {
         String name = tag.value();
         if (tag == null || name.length() == 0) {
             name = object.getClass().getSimpleName();
+        }
+        return name;
+    }
+
+    static String getTagName(Tag tag, Field field) {
+        String name = tag.value();
+        if (tag == null || name.length() == 0) {
+            name = field.getName();
+        }
+        return name;
+    }
+
+    static String getAttributeName(Attribute attribute, Field field) {
+        String name = attribute.value();
+        if (attribute == null || name.length() == 0) {
+            name = field.getName();
         }
         return name;
     }
@@ -55,9 +71,9 @@ class Object2StringHelper {
                 elementFields.add(field);
             } else if (tagAnnotation != null) {
                 elementFields.add(field);
-            }else{
+            } else {
                 final Tag typeTag = field.getType().getAnnotation(Tag.class);
-                if(typeTag!=null){
+                if (typeTag != null) {
                     elementFields.add(field);
                 }
             }
@@ -67,25 +83,21 @@ class Object2StringHelper {
         for (Field field : attributeFields) {
             field.setAccessible(true);
             try {
-                if (field.getType() == Boolean.class
-                        || field.getType() == boolean.class
-                        || field.getType() == Integer.class
-                        || field.getType() == int.class
-                        || field.getType() == Float.class
-                        || field.getType() == float.class
-                        || field.getType() == Double.class
-                        || field.getType() == double.class
-                        || field.getType() == Long.class
-                        || field.getType() == long.class
-                        || field.getType() == byte[].class
-                        || field.getType() == char[].class
-                        || field.getType() == String.class) {
-                    final Object value = field.get(object);
-                    stringBuffer.append(" " + field.getName() + "='" + (value != null ? value : "") + "'");
+                final Object value = field.get(object);
+                if (isElement(field.getType())) {
+                    final String name = getAttributeName(field.getAnnotation(Attribute.class), field);
+                    stringBuffer.append(" " + name + "='" + (value != null ? value : "") + "'");
+                } else if (field.getType() == AttributeMap.class) {
+                    final AttributeMap map = (AttributeMap) value;
+                    for (String name : map.keySet()) {
+                        final String v = map.get(name);
+                        stringBuffer.append(" " + name + "='" + (v != null ? v : "") + "'");
+                    }
                 }
             } catch (IllegalAccessException e) {
             }
         }
+        //============================
         StringBuffer elementValue = new StringBuffer();
         for (Field elementField : elementFields) {
             elementField.setAccessible(true);
@@ -96,22 +108,24 @@ class Object2StringHelper {
                 } else if (elementField.getType() == ElementMap.class) {
                     final ElementMap map = (ElementMap) elementField.get(object);
                     for (String key : map.keySet()) {
-                        final ElementValue value = map.get(key);
-                        elementValue.append("<");
-                        elementValue.append(key);
-                        for (String attribute : value.attribute.keySet()) {
-                            String attributeValue = value.attribute.get(attribute);
-                            if (attributeValue == null) {
-                                attributeValue = "";
+                        final ArrayList<ElementValue> list = map.get(key);
+                        for (ElementValue value : list) {
+                            elementValue.append("<");
+                            elementValue.append(key);
+                            for (String attribute : value.attribute.keySet()) {
+                                String attributeValue = value.attribute.get(attribute);
+                                if (attributeValue == null) {
+                                    attributeValue = "";
+                                }
+                                elementValue.append(" " + attribute + "='" + attributeValue + "'");
                             }
-                            elementValue.append(" " + attribute + "='" + attributeValue + "'");
+                            elementValue.append(getTagEndString(key, value.value));
                         }
-                        elementValue.append(getTagEndString(key,value.value));
                     }
                 } else {
                     final Object o = elementField.get(object);
                     Tag tagAnnotation = elementField.getAnnotation(Tag.class);
-                    if(tagAnnotation==null){
+                    if (tagAnnotation == null) {
                         tagAnnotation = elementField.getType().getAnnotation(Tag.class);
                     }
                     String name = tagAnnotation.value();
@@ -121,9 +135,7 @@ class Object2StringHelper {
                     if (o != null) {
                         if (o instanceof Collection) {
                             for (Object item : (Collection) o) {
-                                if (item.getClass().getAnnotation(Tag.class) != null) {
                                     elementValue.append(toXML(item, name));
-                                }
                             }
                         } else {
                             elementValue.append(toXML(o, name));
@@ -133,11 +145,20 @@ class Object2StringHelper {
             } catch (IllegalAccessException e) {
             }
         }
-        stringBuffer.append(getTagEndString(tag,elementValue.toString()));
+        if (object instanceof ElementMap) {
+            final ElementMap map = (ElementMap) object;
+            for (String key : map.keySet()) {
+                final ArrayList<ElementValue> list = map.get(key);
+                for (ElementValue item : list) {
+                    elementValue.append(toXML(item, key));
+                }
+            }
+        }
+        stringBuffer.append(getTagEndString(tag, elementValue.toString()));
         return stringBuffer.toString();
     }
 
-    private static String getTagEndString(String tag,String value){
+    private static String getTagEndString(String tag, String value) {
         final StringBuffer stringBuffer = new StringBuffer();
         if (value.length() > 0) {
             stringBuffer.append(">");
