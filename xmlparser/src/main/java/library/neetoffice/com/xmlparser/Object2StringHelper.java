@@ -119,7 +119,7 @@ class Object2StringHelper {
                                 }
                                 elementValue.append(" " + attribute + "='" + attributeValue + "'");
                             }
-                            elementValue.append(getTagEndString(key, value.value));
+                            elementValue.append(getTagEndString(key, value.text));
                         }
                     }
                 } else {

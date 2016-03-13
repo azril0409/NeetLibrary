@@ -8,17 +8,17 @@ import android.os.Parcelable;
  */
 public final class StringElement implements Parcelable {
     @Element
-    String value;
+    String text;
 
     public StringElement() {
     }
 
-    public StringElement(String value) {
-        this.value = value;
+    public StringElement(String text) {
+        this.text = text;
     }
 
     protected StringElement(Parcel in) {
-        value = in.readString();
+        text = in.readString();
     }
 
     public static final Creator<StringElement> CREATOR = new Creator<StringElement>() {
@@ -33,17 +33,17 @@ public final class StringElement implements Parcelable {
         }
     };
 
-    public String getValue() {
-        return value;
+    public String getText() {
+        return text;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setText(String text) {
+        this.text = text;
     }
 
     @Override
     public String toString() {
-        return value;
+        return text;
     }
 
     @Override
@@ -53,6 +53,6 @@ public final class StringElement implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(value != null ? value : "");
+        dest.writeString(text != null ? text : "");
     }
 }

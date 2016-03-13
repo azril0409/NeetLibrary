@@ -10,7 +10,7 @@ public final class ElementValue extends ElementMap implements Parcelable {
     @Attribute
     AttributeMap attribute = new AttributeMap();
     @Element
-    String value = "";
+    String text = "";
 
     protected ElementValue() {
 
@@ -18,7 +18,7 @@ public final class ElementValue extends ElementMap implements Parcelable {
 
     protected ElementValue(Parcel in) {
         attribute = (AttributeMap) in.readSerializable();
-        value = in.readString();
+        text = in.readString();
     }
 
     public static final Creator<ElementValue> CREATOR = new Creator<ElementValue>() {
@@ -41,12 +41,12 @@ public final class ElementValue extends ElementMap implements Parcelable {
         attribute.put(name, value);
     }
 
-    public String getValue() {
-        return value;
+    public String getText() {
+        return text;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setText(String text) {
+        this.text = text;
     }
 
     @Override
@@ -57,6 +57,6 @@ public final class ElementValue extends ElementMap implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeSerializable(attribute);
-        dest.writeString(value);
+        dest.writeString(text != null ? text : "");
     }
 }

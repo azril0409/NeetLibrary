@@ -271,10 +271,10 @@ class SAXPraserHelper extends DefaultHandler {
                 try {
                     final ArrayList<ElementValue> list = map.get(qName);
                     final ElementValue elementValue = list.get(list.size() - 1);
-                    if (elementValue.value != null) {
-                        elementValue.value += element;
+                    if (elementValue.text != null) {
+                        elementValue.text += element;
                     } else {
-                        elementValue.value = element;
+                        elementValue.text = element;
                     }
                 } catch (IndexOutOfBoundsException e) {
                 }
