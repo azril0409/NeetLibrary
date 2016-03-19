@@ -25,8 +25,8 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
             return true;
         }
     };
-    private ArrayList<E> originalItems = new ArrayList<>();
-    private ArrayList<Integer> indexs = new ArrayList<>();
+    protected ArrayList<E> originalItems = new ArrayList<>();
+    protected ArrayList<Integer> indexs = new ArrayList<>();
     private final Comparator<Integer> indexSort = new Comparator<Integer>() {
         @Override
         public int compare(Integer lhs, Integer rhs) {
@@ -91,11 +91,7 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
             final int originalSize = originalItems.size();
             final boolean b = originalItems.addAll(items);
             for (int index = originalSize; index < originalItems.size(); index++) {
-                E originalItem = originalItems.get(index);
-                if (b && filter.filter(originalItem)) {
-                    indexs.add(index);
-                    notifyItemInserted(indexs.size() - 1);
-                }
+                refresh();
             }
         } catch (Exception e) {
         } finally {
@@ -118,8 +114,7 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
         try {
             final boolean b = originalItems.add(item);
             if (b && filter.filter(item)) {
-                indexs.add(originalItems.size() - 1);
-                notifyItemInserted(indexs.size() - 1);
+                refresh();
             }
         } catch (Exception e) {
         } finally {
@@ -130,17 +125,7 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
     public final void set(int index, E item) {
         try {
             originalItems.set(index, item);
-            if (filter.filter(item)) {
-                if (!indexs.contains(index)) {
-                    indexs.add(index);
-                    Collections.sort(indexs, indexSort);
-                }
-            } else {
-                if (indexs.contains(index)) {
-                    indexs.remove(indexs.indexOf(index));
-                    Collections.sort(indexs, indexSort);
-                }
-            }
+            refresh();
         } catch (Exception e) {
         } finally {
         }
@@ -171,11 +156,7 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
     @Override
     public final void clear() {
         originalItems.clear();
-        for (int i = 0; i < indexs.size(); i++) {
-            notifyItemRemoved(i);
-        }
-        indexs.clear();
-        notifyDataSetChanged();
+        refresh();
     }
 
     @Override
@@ -185,33 +166,31 @@ public abstract class GenericRecyclerAdapter<E> extends RecyclerView.Adapter<Vie
     }
 
     @Override
-    public void setSort(Comparator<E> sort) {
+    public final void setSort(Comparator<E> sort) {
         this.sort = sort;
         refresh();
     }
 
     @Override
-    public void refresh() {
+    public final void refresh() {
         for (int i = 0; i < indexs.size(); i++) {
             notifyItemRemoved(i);
         }
+        onRefreshIndexs();
+        notifyDataSetChanged();
+    }
+
+    protected void onRefreshIndexs() {
         indexs.clear();
         for (int index = 0; index < originalItems.size(); index++) {
-            E originalItem = originalItems.get(index);
+            final E originalItem = originalItems.get(index);
             if (filter.filter(originalItem)) {
                 if (!indexs.contains(index)) {
                     indexs.add(index);
-                    notifyItemInserted(index);
-                }
-            } else {
-                if (indexs.contains(index)) {
-                    indexs.remove(indexs.indexOf(index));
-                    notifyItemRemoved(index);
                 }
             }
         }
         Collections.sort(indexs, indexSort);
-        notifyDataSetChanged();
     }
 
     @Override

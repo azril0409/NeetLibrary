@@ -27,6 +27,6 @@ public class ModelAdapter extends GenericAdapter<Model, ModelTag> {
     @Override
     public void onBind(ModelTag tag, int position) {
         final Model model = getItem(position);
-        tag.textView.setText(model.text);
+        tag.textView.setText(model.getTitle());
     }
 }

@@ -1,14 +1,9 @@
 package library.neetoffice.com.xmlparser;
 
-
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -41,7 +36,7 @@ public class XMLParser {
         }
     }
 
-    public String toXML(Object object) {
+    public String toXML(Object object) throws XMLParserException{
         return Object2StringHelper.toXML(object);
     }
 

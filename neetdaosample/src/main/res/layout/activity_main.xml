@@ -11,7 +11,7 @@
     tools:context="sample.neetoffice.com.neetdaosample.MainActivity">
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/editText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -21,17 +21,17 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/button1"
             android:layout_width="match_parent"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:onClick="onClickSave"
-            android:text="Save" />
+            android:text="new" />
 
         <Button
+            android:id="@+id/button2"
             android:layout_width="match_parent"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:onClick="onClickSearch"
             android:text="Search" />
     </LinearLayout>
 

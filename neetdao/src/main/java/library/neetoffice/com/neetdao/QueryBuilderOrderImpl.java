@@ -16,7 +16,7 @@ class QueryBuilderOrderImpl<E> extends QueryBuilderResultImpl<E> implements Quer
         if (fieldName == null) {
             return this;
         }
-        orderBy = String.format("ORDER BY %s DESC", fieldName);
+        orderBy = String.format("ORDER BY %s ASC", fieldName);
         return this;
     }
 

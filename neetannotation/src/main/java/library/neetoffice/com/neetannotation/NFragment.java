@@ -6,16 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by Deo on 2016/3/8.
+ * Created by Deo on 2016/3/17.
  */
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface NeetActivity {
+public @interface NFragment {
 
     /**
      * The R.layout.* field which refer to the layout.
      *
      * @return the id of the layout
      */
-    int value();
+    int value() default -1;
 }

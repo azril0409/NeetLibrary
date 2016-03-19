@@ -22,13 +22,13 @@ public interface Dao<E> {
 
     int count();
 
-    int delete();
-
     long insert(E entity);
 
     long insertOrReplace(E entity);
 
     int update(E entity);
+
+    int delete(E entity);
 
     E load();
 

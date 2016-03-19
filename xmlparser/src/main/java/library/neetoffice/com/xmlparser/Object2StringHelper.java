@@ -25,11 +25,14 @@ class Object2StringHelper {
                 || type == String.class);
     }
 
-    static String toXML(Object object) {
+    static String toXML(Object object) throws XMLParserException{
         if (object == null) {
             return null;
         }
         final Tag tag = object.getClass().getAnnotation(Tag.class);
+        if(tag==null){
+            throw new XMLParserException("root class dosn't have @Tag");
+        }
         return toXML(object, getTagName(tag, object));
     }
 

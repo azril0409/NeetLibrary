@@ -25,5 +25,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile project(':neetdao')
     compile project(':genericadapter')
-
+    compile project(':neetannotation')
 }

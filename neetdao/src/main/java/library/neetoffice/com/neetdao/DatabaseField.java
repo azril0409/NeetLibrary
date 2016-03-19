@@ -13,7 +13,5 @@ import java.lang.annotation.Target;
 public @interface DatabaseField {
     String columnName() default "";
 
-    boolean PrimaryKey() default false;
-
     boolean NotNull() default false;
 }

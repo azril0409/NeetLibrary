@@ -17,6 +17,8 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
     private final HashMap<String, Field> map;
     protected String selection;
     protected String orderBy;
+    private int maxRows = Integer.MAX_VALUE;
+    private int startRow = 0;
 
     protected QueryBuilderResultImpl(SQLiteDatabase db, Class modelClass) {
         this.db = db;
@@ -24,23 +26,43 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
         map = new HashMap<>();
         for (Field field : modelClass.getDeclaredFields()) {
             try {
-                final String name = DatabaseHelper.getColumnName(field);
+                final String name = Util.getColumnName(field);
                 map.put(name, field);
             } catch (NeetSQLException e) {
             }
         }
     }
 
+    private Cursor query() {
+        if (startRow == 0 && maxRows == Integer.MAX_VALUE) {
+            return db.query(Util.getTable(modelClass), null, selection, null, null, null, orderBy);
+        } else {
+            return db.query(Util.getTable(modelClass), null, selection, null, null, null, orderBy, startRow + "," + maxRows);
+        }
+    }
+
+    @Override
+    public QueryBuilderResult<E> limit(int maxRows) {
+        this.maxRows = maxRows;
+        return this;
+    }
+
+    @Override
+    public QueryBuilderResult<E> offset(int startRow) {
+        this.startRow = startRow;
+        return this;
+    }
+
     @Override
     public int count() {
-        final Cursor cursor = db.query(DatabaseHelper.getTable(modelClass), null, selection, null, null, null, orderBy);
+        final Cursor cursor = query();
         return cursor.getCount();
     }
 
     @Override
     public List<E> list() {
         final ArrayList<E> list = new ArrayList<>();
-        final Cursor cursor = db.query(DatabaseHelper.getTable(modelClass), null, selection, null, null, null, orderBy);
+        final Cursor cursor = query();
         final int count = cursor.getCount();
         if (count > 0 && cursor.moveToFirst()) {
             do {
@@ -56,7 +78,7 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
 
     @Override
     public E one() {
-        final Cursor cursor = db.query(DatabaseHelper.getTable(modelClass), null, selection, null, null, null, orderBy);
+        final Cursor cursor = query();
         final int count = cursor.getCount();
         if (count > 0 && cursor.moveToFirst()) {
             try {
@@ -70,45 +92,48 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
 
     @Override
     public int delete() {
-        return db.delete(DatabaseHelper.getTable(modelClass), selection, null);
+        return db.delete(Util.getTable(modelClass), selection, null);
     }
 
-    private E getObject(Cursor cursor) throws IllegalAccessException, InstantiationException {
+    E getObject(Cursor cursor) throws IllegalAccessException, InstantiationException {
         final Object object = modelClass.newInstance();
         for (String columnName : map.keySet()) {
             final Field field = map.get(columnName);
             field.setAccessible(true);
-            final int index = cursor.getColumnIndex(columnName);
-            if (field.getType() == Boolean.class) {
-                field.set(object, cursor.getInt(index) > 0);
-            } else if (field.getType() == boolean.class) {
-                field.set(object, cursor.getInt(index) > 0);
-            } else if (field.getType() == Short.class) {
-                field.set(object, cursor.getShort(index));
-            } else if (field.getType() == short.class) {
-                field.set(object, cursor.getShort(index));
-            } else if (field.getType() == Integer.class) {
-                field.set(object, cursor.getInt(index));
-            } else if (field.getType() == int.class) {
-                field.set(object, cursor.getInt(index));
-            } else if (field.getType() == Float.class) {
-                field.set(object, cursor.getFloat(index));
-            } else if (field.getType() == float.class) {
-                field.set(object, cursor.getFloat(index));
-            } else if (field.getType() == Double.class) {
-                field.set(object, cursor.getDouble(index));
-            } else if (field.getType() == double.class) {
-                field.set(object, cursor.getDouble(index));
-            } else if (field.getType() == Long.class) {
-                field.set(object, cursor.getLong(index));
-            } else if (field.getType() == long.class) {
-                field.set(object, cursor.getLong(index));
-            } else if (field.getType() == byte[].class) {
-                field.set(object, cursor.getBlob(index));
-            } else if (field.getType() == char[].class) {
-                field.set(object, cursor.getString(index).toCharArray());
-            } else if (field.getType() == String.class) {
-                field.set(object, cursor.getString(index));
+            try {
+                final int index = cursor.getColumnIndexOrThrow(columnName);
+                if (field.getType() == Boolean.class) {
+                    field.set(object, cursor.getInt(index) > 0);
+                } else if (field.getType() == boolean.class) {
+                    field.set(object, cursor.getInt(index) > 0);
+                } else if (field.getType() == Short.class) {
+                    field.set(object, cursor.getShort(index));
+                } else if (field.getType() == short.class) {
+                    field.set(object, cursor.getShort(index));
+                } else if (field.getType() == Integer.class) {
+                    field.set(object, cursor.getInt(index));
+                } else if (field.getType() == int.class) {
+                    field.set(object, cursor.getInt(index));
+                } else if (field.getType() == Float.class) {
+                    field.set(object, cursor.getFloat(index));
+                } else if (field.getType() == float.class) {
+                    field.set(object, cursor.getFloat(index));
+                } else if (field.getType() == Double.class) {
+                    field.set(object, cursor.getDouble(index));
+                } else if (field.getType() == double.class) {
+                    field.set(object, cursor.getDouble(index));
+                } else if (field.getType() == Long.class) {
+                    field.set(object, cursor.getLong(index));
+                } else if (field.getType() == long.class) {
+                    field.set(object, cursor.getLong(index));
+                } else if (field.getType() == byte[].class) {
+                    field.set(object, cursor.getBlob(index));
+                } else if (field.getType() == char[].class) {
+                    field.set(object, cursor.getString(index).toCharArray());
+                } else if (field.getType() == String.class) {
+                    field.set(object, cursor.getString(index));
+                }
+            } catch (IllegalArgumentException e) {
             }
         }
         return (E) object;

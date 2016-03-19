@@ -15,6 +15,10 @@ import java.util.List;
  */
 public interface QueryBuilderResult<E> {
 
+    QueryBuilderResult<E> limit(int maxRows);
+
+    QueryBuilderResult<E> offset(int maxRows);
+
     int count();
 
     List<E> list();
@@ -22,6 +26,4 @@ public interface QueryBuilderResult<E> {
     E one();
 
     int delete();
-
-
 }

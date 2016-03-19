@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,44 +38,41 @@ class DaoImpl<E> implements Dao<E> {
                 if (databaseField == null) {
                     continue;
                 }
-                if (databaseField.PrimaryKey()) {
-                    continue;
-                }
                 field.setAccessible(true);
                 final Object value = field.get(entity);
                 if (value == null) {
                     continue;
                 }
                 if (field.getType() == Boolean.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (Boolean) value ? 1 : 0);
+                    cv.put(Util.getColumnName(field), (Boolean) value ? 1 : 0);
                 } else if (field.getType() == boolean.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (boolean) value ? 1 : 0);
+                    cv.put(Util.getColumnName(field), (boolean) value ? 1 : 0);
                 } else if (field.getType() == Short.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (Short) value);
+                    cv.put(Util.getColumnName(field), (Short) value);
                 } else if (field.getType() == short.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (short) value);
+                    cv.put(Util.getColumnName(field), (short) value);
                 } else if (field.getType() == Integer.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (Integer) value);
+                    cv.put(Util.getColumnName(field), (Integer) value);
                 } else if (field.getType() == int.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (int) value);
+                    cv.put(Util.getColumnName(field), (int) value);
                 } else if (field.getType() == Float.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (Float) value);
+                    cv.put(Util.getColumnName(field), (Float) value);
                 } else if (field.getType() == float.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (float) value);
+                    cv.put(Util.getColumnName(field), (float) value);
                 } else if (field.getType() == Double.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (Double) value);
+                    cv.put(Util.getColumnName(field), (Double) value);
                 } else if (field.getType() == double.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (double) value);
+                    cv.put(Util.getColumnName(field), (double) value);
                 } else if (field.getType() == Long.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (Long) value);
+                    cv.put(Util.getColumnName(field), (Long) value);
                 } else if (field.getType() == long.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (long) value);
+                    cv.put(Util.getColumnName(field), (long) value);
                 } else if (field.getType() == byte[].class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (byte[]) value);
+                    cv.put(Util.getColumnName(field), (byte[]) value);
                 } else if (field.getType() == char[].class) {
-                    cv.put(DatabaseHelper.getColumnName(field), new String((char[]) value));
+                    cv.put(Util.getColumnName(field), new String((char[]) value));
                 } else if (field.getType() == String.class) {
-                    cv.put(DatabaseHelper.getColumnName(field), (String) value);
+                    cv.put(Util.getColumnName(field), (String) value);
                 }
             } catch (IllegalAccessException e) {
             }
@@ -93,43 +91,35 @@ class DaoImpl<E> implements Dao<E> {
     }
 
     @Override
-    public int delete() {
-        return new QueryBuilderImpl<E>(db, modelClass).delete();
-    }
-
-    @Override
     public long insert(E entity) {
-        final String tableName = DatabaseHelper.getTable(modelClass);
-        Log.d(Dao.class.getSimpleName(), "tableName : " + tableName);
-        return db.insert(DatabaseHelper.getTable(modelClass), null, getContentValues(entity));
+        return db.insert(Util.getTable(modelClass), null, getContentValues(entity));
     }
 
     @Override
     public long insertOrReplace(E entity) {
         final Field[] fields = modelClass.getDeclaredFields();
-        Field field = null;
+        Field id_Field = null;
+        Id annotation = null;
         for (Field f : fields) {
-            final DatabaseField databaseField = f.getAnnotation(DatabaseField.class);
-            if (databaseField == null) {
-                continue;
-            }
-            if (databaseField.PrimaryKey()) {
-                field = f;
+            annotation = f.getAnnotation(Id.class);
+            if (annotation != null) {
+                id_Field = f;
                 break;
             }
         }
-        if (field != null) {
+        if (id_Field != null && annotation != null) {
+            id_Field.setAccessible(true);
             try {
-                Object object = field.get(entity);
+                Object object = id_Field.get(entity);
                 if (object != null) {
-                    return db.update(DatabaseHelper.getTable(modelClass), getContentValues(entity), Where.eq(DatabaseHelper.getColumnName(field), object).selection, null);
+                    return db.update(Util.getTable(modelClass), getContentValues(entity), Where.eq(annotation.value(), object).selection, null);
                 } else {
-                    return db.insert(DatabaseHelper.getTable(modelClass), null, getContentValues(entity));
+                    return db.insert(Util.getTable(modelClass), null, getContentValues(entity));
                 }
             } catch (IllegalAccessException e) {
             }
         } else {
-            return db.insert(DatabaseHelper.getTable(modelClass), null, getContentValues(entity));
+            return db.insert(Util.getTable(modelClass), null, getContentValues(entity));
         }
         return 0;
     }
@@ -137,25 +127,58 @@ class DaoImpl<E> implements Dao<E> {
     @Override
     public int update(E entity) {
         final Field[] fields = modelClass.getDeclaredFields();
-        Field field = null;
+        Field id_Field = null;
+        Id annotation = null;
         for (Field f : fields) {
-            final DatabaseField databaseField = f.getAnnotation(DatabaseField.class);
-            if (databaseField == null) {
-                continue;
-            }
-            if (databaseField.PrimaryKey()) {
-                field = f;
+            annotation = f.getAnnotation(Id.class);
+            if (annotation != null) {
+                id_Field = f;
                 break;
             }
         }
-        if (field != null) {
+        if (id_Field != null && annotation != null) {
+            id_Field.setAccessible(true);
             try {
-                Object value = field.get(entity);
+                final Object value = id_Field.get(entity);
                 if (value != null) {
-                    return db.update(DatabaseHelper.getTable(modelClass), getContentValues(entity), Where.eq(DatabaseHelper.getColumnName(field), value).selection, null);
+                    return db.update(Util.getTable(modelClass), getContentValues(entity), Where.eq(annotation.value(), value).selection, null);
                 }
             } catch (IllegalAccessException e) {
             }
+        }
+        return 0;
+    }
+
+    @Override
+    public int delete(E entity) {
+        ArrayList<Where> wheres = new ArrayList<>();
+        final Field[] fields = modelClass.getDeclaredFields();
+        Field id_Field = null;
+        Id annotation = null;
+        for (Field f : fields) {
+            annotation = f.getAnnotation(Id.class);
+            if (annotation != null) {
+                id_Field = f;
+            } else {
+                try {
+                    f.setAccessible(true);
+                    final Object value = f.get(entity);
+                    wheres.add(Where.eq(Util.getColumnName(f), value));
+                } catch (IllegalAccessException e) {
+                }
+            }
+        }
+        if (id_Field != null && annotation != null) {
+            id_Field.setAccessible(true);
+            try {
+                final Object value = id_Field.get(entity);
+                if (value != null) {
+                    return new QueryBuilderImpl<E>(db, modelClass).where(Where.eq(annotation.value(), value)).delete();
+                }
+            } catch (IllegalAccessException e) {
+            }
+        } else {
+            return new QueryBuilderImpl<E>(db, modelClass).where(wheres.toArray(new Where[wheres.size()])).delete();
         }
         return 0;
     }

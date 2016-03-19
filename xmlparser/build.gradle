@@ -20,7 +20,7 @@ android {
 dependencies {
 }
 
-def libname = 'XMLParser_104.jar'
+def libname = 'XMLParser_105.jar'
 task clearAar(type: Delete) {
     delete '../librarys/xmlparser/'
 }

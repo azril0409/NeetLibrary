@@ -47,6 +47,10 @@ public class RecyclerListActivity extends AppCompatActivity implements Toolbar.O
     private Adapter adapter;
     private String text;
 
+    protected RecyclerView.LayoutManager getLayoutManager(){
+        return new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +62,7 @@ public class RecyclerListActivity extends AppCompatActivity implements Toolbar.O
         toolbar.setOnMenuItemClickListener(this);
         adapter = new Adapter(this, Arrays.asList(getResources().getStringArray(R.array.items)));
         adapter.setFilter(this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new NormalHeaderDecoration<String>(adapter));
         editText.addTextChangedListener(this);
@@ -147,7 +151,7 @@ public class RecyclerListActivity extends AppCompatActivity implements Toolbar.O
             long id = getHeaderId(position);
             SrtingCell cell = (SrtingCell) viewholder;
             cell.setBackgroundColor(Color.BLUE);
-            cell.bind(String.valueOf((int)id));
+            cell.bind(String.valueOf((char)id));
         }
     }
 }

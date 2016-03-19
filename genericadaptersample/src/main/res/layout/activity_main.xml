@@ -33,4 +33,25 @@
         android:onClick="onRecyclerList"
         android:text="RecyclerList"
         android:textColor="@android:color/white" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:background="?attr/colorPrimary"
+        android:onClick="onRecyclerGrid"
+        android:text="RecyclerGrid"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:background="?attr/colorPrimary"
+        android:onClick="onRecyclerHeaderGrid"
+        android:text="RecyclerHeaderGrid"
+        android:textColor="@android:color/white" />
+
 </LinearLayout>

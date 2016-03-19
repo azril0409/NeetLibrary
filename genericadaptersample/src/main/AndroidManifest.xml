@@ -23,6 +23,12 @@
         <activity
             android:name=".RecyclerListActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".RecyclerGridActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".RecyclerHeaderGridActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

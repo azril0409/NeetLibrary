@@ -2,7 +2,9 @@ package library.neetoffice.com.genericadapter;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -43,11 +45,11 @@ public class NormalHeaderDecoration<E> extends RecyclerView.ItemDecoration {
         int position = parent.getChildAdapterPosition(view);
 
         int headerHeight = 0;
-        if (position != RecyclerView.NO_POSITION && hasHeader(position)) {
+        if (position != RecyclerView.NO_POSITION && hasHeader(parent, position)) {
+            Log.d("TAG,", position + " hasHeader");
             View header = getHeader(parent, position).itemView;
             headerHeight = getHeaderHeightForLayout(header);
         }
-
         outRect.set(0, headerHeight, 0, 0);
     }
 
@@ -59,13 +61,26 @@ public class NormalHeaderDecoration<E> extends RecyclerView.ItemDecoration {
         mHeaderCache.clear();
     }
 
-    private boolean hasHeader(int position) {
+    private boolean hasHeader(RecyclerView parent, int position) {
         if (position == 0) {
             return true;
         }
-
-        int previous = position - 1;
-        return mAdapter.getHeaderId(position) != mAdapter.getHeaderId(previous);
+        RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
+        if (layoutManager instanceof GridLayoutManager) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+            final int spanCount = gridLayoutManager.getSpanCount();
+            if (position < spanCount) {
+                return true;
+            }
+            if (spanCount > 1) {
+                return false;
+            }
+            int previous = position - 1;
+            return mAdapter.getHeaderId(position) != mAdapter.getHeaderId(previous);
+        } else {
+            int previous = position - 1;
+            return mAdapter.getHeaderId(position) != mAdapter.getHeaderId(previous);
+        }
     }
 
     private class Holder extends RecyclerView.ViewHolder {
@@ -83,7 +98,6 @@ public class NormalHeaderDecoration<E> extends RecyclerView.ItemDecoration {
         } else {
             final View header = mAdapter.onCreateHeaderViewHolder(parent);
             final Holder holder = new Holder(header);
-
             //noinspection unchecked
             mAdapter.onBindHeaderViewHolder(header, position);
 
@@ -97,7 +111,6 @@ public class NormalHeaderDecoration<E> extends RecyclerView.ItemDecoration {
 
             header.measure(childWidth, childHeight);
             header.layout(0, 0, header.getMeasuredWidth(), header.getMeasuredHeight());
-
             mHeaderCache.put(key, holder);
 
             return holder;
@@ -115,12 +128,13 @@ public class NormalHeaderDecoration<E> extends RecyclerView.ItemDecoration {
             final View child = parent.getChildAt(layoutPos);
 
             final int adapterPos = parent.getChildAdapterPosition(child);
+            Log.d("TAG", "adapterPos = " + adapterPos);
 
-            if (adapterPos != RecyclerView.NO_POSITION && (layoutPos == 0 || hasHeader(adapterPos))) {
+            if (adapterPos != RecyclerView.NO_POSITION && (layoutPos == 0 || hasHeader(parent, adapterPos))) {
                 View header = getHeader(parent, adapterPos).itemView;
                 c.save();
-                final int left = child.getLeft();
-                final int top = getHeaderTop(parent, child, header, adapterPos, layoutPos);
+                final int left = 0;//child.getLeft();
+                int top = getHeaderTop(parent, child, header, adapterPos, layoutPos);
                 c.translate(left, top);
                 header.draw(c);
                 c.restore();

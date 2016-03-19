@@ -10,7 +10,7 @@ import library.neetoffice.com.neetdao.DatabaseHelper;
  */
 public class DaoHelper extends DatabaseHelper {
     private static final String NAME = "DEMO";
-    private static final int VERSION = 1;
+    private static final int VERSION = 3;
 
 
     public DaoHelper(Context context) {
