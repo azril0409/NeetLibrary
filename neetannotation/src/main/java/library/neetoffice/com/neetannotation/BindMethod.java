@@ -3,6 +3,7 @@ package library.neetoffice.com.neetannotation;
 import android.app.Activity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 
 import java.lang.reflect.Method;
@@ -131,6 +132,40 @@ abstract class BindMethod {
             }
             if (h instanceof AdapterView) {
                 ((AdapterView) h).setOnItemClickListener(new NeetItemClickListener(a, c));
+            }
+        }
+    }
+
+    static void bindCheckedChange(Activity a, Method c) {
+        final CheckedChange d = c.getAnnotation(CheckedChange.class);
+        if (d == null) {
+            return;
+        }
+        final int[] f = d.value();
+        for (int g : f) {
+            final View h = a.findViewById(g);
+            if (h == null) {
+                continue;
+            }
+            if (h instanceof AdapterView) {
+                ((CompoundButton) h).setOnCheckedChangeListener(new NeetCheckedChangeListener(a, c));
+            }
+        }
+    }
+
+    static void bindCheckedChange(Object a, View b, Method c) {
+        final CheckedChange d = c.getAnnotation(CheckedChange.class);
+        if (d == null) {
+            return;
+        }
+        final int[] f = d.value();
+        for (int g : f) {
+            final View h = b.findViewById(g);
+            if (h == null) {
+                continue;
+            }
+            if (h instanceof AdapterView) {
+                ((CompoundButton) h).setOnCheckedChangeListener(new NeetCheckedChangeListener(a, c));
             }
         }
     }

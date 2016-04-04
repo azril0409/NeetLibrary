@@ -8,6 +8,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Click(R.id.button1)
     public void onClickNew(View view) {
-        final Intent intent = new Intent(this,NewActivity.class);
+        final Intent intent = new Intent(this, NewActivity.class);
         startActivity(intent);
     }
 
@@ -63,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
     @ItemClick(R.id.listView)
     public void onItemClick(Model model) {
-        final Intent intent = new Intent(this,DetailActivity.class);
-        intent.putExtra("MODEL",model);
+        final Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("MODEL", model);
         startActivity(intent);
     }
 }

@@ -10,12 +10,12 @@ import java.lang.reflect.Modifier;
 /**
  * Created by Deo on 2016/3/18.
  */
-public class NeetTouchListener implements View.OnTouchListener {
+class NeetTouchListener implements View.OnTouchListener {
     final Object a;
     final Method b;
     final int d;
 
-    public NeetTouchListener(Object a, Method b) {
+    NeetTouchListener(Object a, Method b) {
         this.a = a;
         this.b = b;
         if (b.getModifiers() != Modifier.PUBLIC) {

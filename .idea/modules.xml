@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NeetLibrary.iml" filepath="$PROJECT_DIR$/NeetLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/androidcamerautil/androidcamerautil.iml" filepath="$PROJECT_DIR$/androidcamerautil/androidcamerautil.iml" />
+      <module fileurl="file://$PROJECT_DIR$/codeutil/codeutil.iml" filepath="$PROJECT_DIR$/codeutil/codeutil.iml" />
+      <module fileurl="file://$PROJECT_DIR$/codeutilsample/codeutilsample.iml" filepath="$PROJECT_DIR$/codeutilsample/codeutilsample.iml" />
       <module fileurl="file://$PROJECT_DIR$/genericadapter/genericadapter.iml" filepath="$PROJECT_DIR$/genericadapter/genericadapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/genericadaptersample/genericadaptersample.iml" filepath="$PROJECT_DIR$/genericadaptersample/genericadaptersample.iml" />
       <module fileurl="file://$PROJECT_DIR$/genericrecycleradapter/genericrecycleradapter.iml" filepath="$PROJECT_DIR$/genericrecycleradapter/genericrecycleradapter.iml" />

@@ -10,12 +10,12 @@ import java.lang.reflect.Modifier;
 /**
  * Created by Deo on 2016/3/17.
  */
-public class NeetLongClickListener implements View.OnLongClickListener {
+class NeetLongClickListener implements View.OnLongClickListener {
     final Object a;
     final Method b;
     final int d;
 
-    public NeetLongClickListener(Object a, Method b) throws BindExcetion {
+    NeetLongClickListener(Object a, Method b) throws BindExcetion {
         this.a = a;
         this.b = b;
         if (b.getModifiers() != Modifier.PUBLIC) {

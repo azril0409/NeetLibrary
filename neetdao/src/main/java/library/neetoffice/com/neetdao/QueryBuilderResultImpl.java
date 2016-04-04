@@ -64,10 +64,18 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
         final ArrayList<E> list = new ArrayList<>();
         final Cursor cursor = query();
         final int count = cursor.getCount();
+        final HashMap<String, Integer> columnIndexMap = new HashMap<>();
+        for (String columnName : map.keySet()) {
+            try {
+                final int index = cursor.getColumnIndexOrThrow(columnName);
+                columnIndexMap.put(columnName, index);
+            } catch (IllegalArgumentException e) {
+            }
+        }
         if (count > 0 && cursor.moveToFirst()) {
             do {
                 try {
-                    list.add(getObject(cursor));
+                    list.add(getObject(columnIndexMap, cursor));
                 } catch (InstantiationException e) {
                 } catch (IllegalAccessException e) {
                 }
@@ -80,9 +88,17 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
     public E one() {
         final Cursor cursor = query();
         final int count = cursor.getCount();
+        final HashMap<String, Integer> columnIndexMap = new HashMap<>();
+        for (String columnName : map.keySet()) {
+            try {
+                final int index = cursor.getColumnIndexOrThrow(columnName);
+                columnIndexMap.put(columnName, index);
+            } catch (IllegalArgumentException e) {
+            }
+        }
         if (count > 0 && cursor.moveToFirst()) {
             try {
-                return getObject(cursor);
+                return getObject(columnIndexMap, cursor);
             } catch (InstantiationException e) {
             } catch (IllegalAccessException e) {
             }
@@ -95,13 +111,13 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
         return db.delete(Util.getTable(modelClass), selection, null);
     }
 
-    E getObject(Cursor cursor) throws IllegalAccessException, InstantiationException {
+    E getObject(HashMap<String, Integer> columnIndexMap, Cursor cursor) throws IllegalAccessException, InstantiationException {
         final Object object = modelClass.newInstance();
-        for (String columnName : map.keySet()) {
+        for (String columnName : columnIndexMap.keySet()) {
             final Field field = map.get(columnName);
             field.setAccessible(true);
             try {
-                final int index = cursor.getColumnIndexOrThrow(columnName);
+                final int index = columnIndexMap.get(columnName);
                 if (field.getType() == Boolean.class) {
                     field.set(object, cursor.getInt(index) > 0);
                 } else if (field.getType() == boolean.class) {

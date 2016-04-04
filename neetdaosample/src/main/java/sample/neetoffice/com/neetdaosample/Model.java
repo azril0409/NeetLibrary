@@ -27,7 +27,7 @@ public class Model implements Parcelable {
     public Model() {
     }
 
-    public Model(String message, String title) {
+    public Model(String title, String message) {
         this.message = message;
         this.title = title;
     }

@@ -15,7 +15,7 @@ class NeetOnClickListener implements View.OnClickListener {
     final Method b;
     final int d;
 
-    public NeetOnClickListener(Object a, Method b) throws BindExcetion {
+    NeetOnClickListener(Object a, Method b) throws BindExcetion {
         this.a = a;
         this.b = b;
         if (b.getModifiers() != Modifier.PUBLIC) {

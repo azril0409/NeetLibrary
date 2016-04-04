@@ -11,6 +11,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/androidcamerautil" />
+            <option value="$PROJECT_DIR$/codeutil" />
+            <option value="$PROJECT_DIR$/codeutilsample" />
             <option value="$PROJECT_DIR$/genericadapter" />
             <option value="$PROJECT_DIR$/genericadaptersample" />
             <option value="$PROJECT_DIR$/genericrecycleradapter" />

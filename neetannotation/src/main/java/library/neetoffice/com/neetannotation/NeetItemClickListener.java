@@ -10,13 +10,13 @@ import java.lang.reflect.Modifier;
 /**
  * Created by Deo on 2016/3/18.
  */
-public class NeetItemClickListener implements AdapterView.OnItemClickListener {
+class NeetItemClickListener implements AdapterView.OnItemClickListener {
     final Object a;
     final Method b;
     final int d;
     final Class<?> f;
 
-    public NeetItemClickListener(Object a, Method b) throws BindExcetion {
+    NeetItemClickListener(Object a, Method b) throws BindExcetion {
         this.a = a;
         this.b = b;
         if (b.getModifiers() != Modifier.PUBLIC) {

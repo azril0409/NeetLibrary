@@ -14,21 +14,29 @@ public class Util {
             throw new NeetSQLException("No @DatabaseTable");
         }
         if (databaseTable.tableName().length() == 0) {
-            return modelClass.getSimpleName();
+            return modelClass.getSimpleName().toUpperCase();
         } else {
             return databaseTable.tableName();
         }
     }
 
-    static String getColumnName(Field field) throws NeetSQLException{
+    static String getColumnName(Field field) throws NeetSQLException {
+        final Id idField = field.getAnnotation(Id.class);
         final DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-        if (databaseField == null) {
-            throw new NeetSQLException("No @DatabaseField");
-        }
-        if (databaseField.columnName().length() == 0) {
-            return field.getName();
+        if (idField != null) {
+            if (idField.value().length() == 0) {
+                return "_"+field.getName().toUpperCase();
+            } else {
+                return idField.value();
+            }
+        } else if (databaseField != null) {
+            if (databaseField.columnName().length() == 0) {
+                return "_"+field.getName().toUpperCase();
+            } else {
+                return databaseField.columnName();
+            }
         } else {
-            return databaseField.columnName();
+            throw new NeetSQLException("No @DatabaseField");
         }
     }
 }

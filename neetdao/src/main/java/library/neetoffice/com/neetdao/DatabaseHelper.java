@@ -9,6 +9,7 @@ import android.util.Log;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Deo on 2016/3/4.
@@ -41,21 +42,13 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
                 db.beginTransaction();
                 final Cursor cursor = db.rawQuery("SELECT * FROM " + table, null);
                 if (isUpdate(cursor, modelClass)) {
+                    cursor.close();
+                    final DaoImpl dao = new DaoImpl(db, modelClass);
+                    List list = dao.loadAll();
                     dropTable(db, modelClass);
                     createTable(db, modelClass);
-                    final int count = cursor.getCount();
-                    final DaoImpl dao = new DaoImpl(db, modelClass);
-                    QueryBuilderResultImpl queryBuilder = new QueryBuilderResultImpl(db, modelClass);
-                    if (count > 0 && cursor.moveToFirst()) {
-                        do {
-                            try {
-                                dao.insert(queryBuilder.getObject(cursor));
-                            } catch (IllegalAccessException e) {
-                                Log.d("NeetDao",e.toString());
-                            } catch (InstantiationException e) {
-                                Log.d("NeetDao",e.toString());
-                            }
-                        } while (cursor.moveToNext());
+                    for (Object o : list) {
+                        dao.insert(o);
                     }
                 }
                 db.setTransactionSuccessful();
@@ -117,7 +110,7 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
             final Id id = field.getAnnotation(Id.class);
             final DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
             if (id != null) {
-                sql.append(id.value());
+                sql.append(Util.getColumnName(field));
                 sql.append(" ");
                 if (field.getType() == Integer.class) {
                     sql.append(" INTEGER");
