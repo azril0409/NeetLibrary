@@ -12,25 +12,31 @@ import java.lang.reflect.Method;
  */
 abstract class BindView {
     static void onCreate(ViewGroup a) {
-        final Class<?> c = a.getClass();
+        Class<?> c = a.getClass();
         final NViewGroup d = c.getAnnotation(NViewGroup.class);
         if (d != null && d.value() != -1) {
-            ViewGroup.inflate(a.getContext(),d.value(),a);
+            ViewGroup.inflate(a.getContext(), d.value(), a);
         }
-        final Field[] f = c.getDeclaredFields();
-        for (Field g : f) {
-            bindViewById(a, g);
-            BindField.bindBean(a, g, a.getContext());
-            BindField.bindRootContext(a, g, a.getContext());
-        }
-        final Method[] h = c.getDeclaredMethods();
-        for (Method i : h) {
-            BindMethod.bindClick(a, a, i);
-            BindMethod.bindLongClick(a, a, i);
-            BindMethod.bindTouch(a, a, i);
-            BindMethod.bindItemClick(a, a, i);
-            BindMethod.bindCheckedChange(a, a, i);
-        }
+        do {
+            final NViewGroup q = c.getAnnotation(NViewGroup.class);
+            if (q != null) {
+                final Field[] f = c.getDeclaredFields();
+                for (Field g : f) {
+                    bindViewById(a, g);
+                    BindField.bindBean(a, g, a.getContext());
+                    BindField.bindRootContext(a, g, a.getContext());
+                }
+                final Method[] h = c.getDeclaredMethods();
+                for (Method i : h) {
+                    BindMethod.bindClick(a, a, i);
+                    BindMethod.bindLongClick(a, a, i);
+                    BindMethod.bindTouch(a, a, i);
+                    BindMethod.bindItemClick(a, a, i);
+                    BindMethod.bindCheckedChange(a, a, i);
+                }
+            }
+            c = c.getSuperclass();
+        } while (c != null);
     }
 
     private static void bindViewById(ViewGroup a, Field b) {

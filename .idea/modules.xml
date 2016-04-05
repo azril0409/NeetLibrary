@@ -11,6 +11,7 @@
       <module fileurl="file://$PROJECT_DIR$/genericrecycleradapter/genericrecycleradapter.iml" filepath="$PROJECT_DIR$/genericrecycleradapter/genericrecycleradapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/neetannotation/neetannotation.iml" filepath="$PROJECT_DIR$/neetannotation/neetannotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/neetdao/neetdao.iml" filepath="$PROJECT_DIR$/neetdao/neetdao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/neetdao-sqlcipher/neetdao-sqlcipher.iml" filepath="$PROJECT_DIR$/neetdao-sqlcipher/neetdao-sqlcipher.iml" />
       <module fileurl="file://$PROJECT_DIR$/neetdaosample/neetdaosample.iml" filepath="$PROJECT_DIR$/neetdaosample/neetdaosample.iml" />
       <module fileurl="file://$PROJECT_DIR$/xmlparser/xmlparser.iml" filepath="$PROJECT_DIR$/xmlparser/xmlparser.iml" />
     </modules>

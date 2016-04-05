@@ -1,11 +1,14 @@
 package library.neetoffice.com.neetannotation;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -168,5 +171,51 @@ abstract class BindMethod {
                 ((CompoundButton) h).setOnCheckedChangeListener(new NeetCheckedChangeListener(a, c));
             }
         }
+    }
+
+    static void onActivityResult(Object a, int b, Intent c) {
+        Class<?> d = a.getClass();
+        do {
+            final NActivity q = d.getAnnotation(NActivity.class);
+            final NFragment r = d.getAnnotation(NFragment.class);
+            if (q != null || r != null) {
+                final Method[] f = d.getDeclaredMethods();
+                for (Method g : f) {
+                    final OnActivityResult h = g.getAnnotation(OnActivityResult.class);
+                    if (h == null) {
+                        continue;
+                    }
+                    if (h.value() == b) {
+                        final Class<?>[] i = g.getParameterTypes();
+                        if (i.length == 0) {
+                            try {
+                                g.invoke(a);
+                            } catch (IllegalAccessException e) {
+                            } catch (InvocationTargetException e) {
+                            }
+                        } else if (i.length == 1) {
+                            if (i[0] == Intent.class) {
+                                try {
+                                    g.invoke(a, c);
+                                } catch (IllegalAccessException e) {
+                                } catch (InvocationTargetException e) {
+                                }
+                            } else if (i[0] == Bundle.class) {
+                                try {
+                                    if (c != null) {
+                                        g.invoke(a, c.getExtras());
+                                    } else {
+                                        g.invoke(a, null);
+                                    }
+                                } catch (IllegalAccessException e) {
+                                } catch (InvocationTargetException e) {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            d = d.getSuperclass();
+        } while (d != null);
     }
 }

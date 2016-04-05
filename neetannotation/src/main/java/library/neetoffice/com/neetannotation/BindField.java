@@ -1,6 +1,7 @@
 package library.neetoffice.com.neetannotation;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 
 import java.lang.reflect.Constructor;
@@ -69,6 +70,29 @@ abstract class BindField {
             }
         } else {
             throw new BindExcetion(b.getType() + " type is not Context");
+        }
+    }
+
+    static void bindSaveInstance(Object a, Field b, Bundle w) {
+        if (w == null) {
+            return;
+        }
+        final SaveInstance d = b.getAnnotation(SaveInstance.class);
+        if (d == null) {
+            return;
+        }
+        final String h;
+        if (d.value().length() > 0) {
+            h = d.value();
+        } else {
+            h = "_" + b.getName();
+        }
+        final Object i = w.get(h);
+        if (i != null) {
+            try {
+                b.set(a, i);
+            } catch (IllegalAccessException e) {
+            }
         }
     }
 }
