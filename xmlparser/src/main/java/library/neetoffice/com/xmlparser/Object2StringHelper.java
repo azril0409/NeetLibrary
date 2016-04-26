@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 class Object2StringHelper {
 
-    static boolean isElement(Class type) {
+    static boolean isContent(Class type) {
         return (type == Boolean.class
                 || type == boolean.class
                 || type == Integer.class
@@ -25,31 +25,31 @@ class Object2StringHelper {
                 || type == String.class);
     }
 
-    static String toXML(Object object) throws XMLParserException{
+    static String toXML(Object object) throws XMLParserException {
         if (object == null) {
             return null;
         }
-        final Tag tag = object.getClass().getAnnotation(Tag.class);
-        if(tag==null){
-            throw new XMLParserException("root class dosn't have @Tag");
+        final Element element = object.getClass().getAnnotation(Element.class);
+        if (element == null) {
+            throw new XMLParserException("root class dosn't have @Element");
         }
-        return toXML(object, getTagName(tag, object));
+        return toXML(object, getElementName(element, object));
     }
 
-    static String getTagName(Tag tag, Object object) {
-        String name = tag.value();
-        if (tag == null || name.length() == 0) {
-            name = object.getClass().getSimpleName();
+    static String getElementName(Element element, Object object) {
+        if (element != null && element.value().length() > 0) {
+            return element.value();
+        } else {
+            return object.getClass().getSimpleName();
         }
-        return name;
     }
 
-    static String getTagName(Tag tag, Field field) {
-        String name = tag.value();
-        if (tag == null || name.length() == 0) {
-            name = field.getName();
+    static String getElementName(Element element, Field field) {
+        if (element != null && element.value().length() > 0) {
+            return element.value();
+        } else {
+            return field.getName();
         }
-        return name;
     }
 
     static String getAttributeName(Attribute attribute, Field field) {
@@ -60,34 +60,44 @@ class Object2StringHelper {
         return name;
     }
 
-    static String toXML(Object object, String tag) {
+    static String toXML(Object object, String elementName) {
         final StringBuffer stringBuffer = new StringBuffer();
         final ArrayList<Field> attributeFields = new ArrayList<>();
         final ArrayList<Field> elementFields = new ArrayList<>();
-        for (Field field : object.getClass().getDeclaredFields()) {
-            final Tag tagAnnotation = field.getAnnotation(Tag.class);
-            final Attribute attribute = field.getAnnotation(Attribute.class);
-            final Element element = field.getAnnotation(Element.class);
-            if (attribute != null) {
-                attributeFields.add(field);
-            } else if (element != null) {
-                elementFields.add(field);
-            } else if (tagAnnotation != null) {
-                elementFields.add(field);
-            } else {
-                final Tag typeTag = field.getType().getAnnotation(Tag.class);
-                if (typeTag != null) {
+        final ArrayList<Class<?>> classes = new ArrayList<>();
+        Class<?> c = object.getClass();
+        while (c != null) {
+            classes.add(c);
+            c = c.getSuperclass();
+        }
+        final int count = classes.size();
+        for (int i = 0; i < count; i++) {
+            final Class<?> cls = classes.get(count - i - 1);
+            for (Field field : cls.getDeclaredFields()) {
+                final Element elementAnnotation = field.getAnnotation(Element.class);
+                final Attribute attribute = field.getAnnotation(Attribute.class);
+                final Content content = field.getAnnotation(Content.class);
+                if (attribute != null) {
+                    attributeFields.add(field);
+                } else if (content != null) {
                     elementFields.add(field);
+                } else if (elementAnnotation != null) {
+                    elementFields.add(field);
+                } else {
+                    final Element typeElement = field.getType().getAnnotation(Element.class);
+                    if (typeElement != null) {
+                        elementFields.add(field);
+                    }
                 }
             }
         }
         stringBuffer.append("<");
-        stringBuffer.append(tag);
+        stringBuffer.append(elementName);
         for (Field field : attributeFields) {
             field.setAccessible(true);
             try {
                 final Object value = field.get(object);
-                if (isElement(field.getType())) {
+                if (isContent(field.getType())) {
                     final String name = getAttributeName(field.getAnnotation(Attribute.class), field);
                     stringBuffer.append(" " + name + "='" + (value != null ? value : "") + "'");
                 } else if (field.getType() == AttributeMap.class) {
@@ -101,13 +111,25 @@ class Object2StringHelper {
             }
         }
         //============================
-        StringBuffer elementValue = new StringBuffer();
+        final StringBuffer elementValue = new StringBuffer();
         for (Field elementField : elementFields) {
             elementField.setAccessible(true);
             try {
-                if (isElement(elementField.getType())) {
-                    final Object value = elementField.get(object);
-                    elementValue.append(value != null ? value : "");
+                if (isContent(elementField.getType())) {
+                    if (elementField.getAnnotation(Element.class) != null) {
+                        final Element tagAnnotation = elementField.getAnnotation(Element.class);
+                        final String name = getElementName(tagAnnotation, elementField);
+                        final Object value = elementField.get(object);
+                        final String v = value != null ? String.valueOf(value) : "";
+                        if (v.length() == 0) {
+                            elementValue.append(String.format("<%s />", name));
+                        } else {
+                            elementValue.append(String.format("<%s>%s</%s>", name, v, name));
+                        }
+                    } else {
+                        final Object value = elementField.get(object);
+                        elementValue.append(value != null ? value : "");
+                    }
                 } else if (elementField.getType() == ElementMap.class) {
                     final ElementMap map = (ElementMap) elementField.get(object);
                     for (String key : map.keySet()) {
@@ -127,18 +149,12 @@ class Object2StringHelper {
                     }
                 } else {
                     final Object o = elementField.get(object);
-                    Tag tagAnnotation = elementField.getAnnotation(Tag.class);
-                    if (tagAnnotation == null) {
-                        tagAnnotation = elementField.getType().getAnnotation(Tag.class);
-                    }
-                    String name = tagAnnotation.value();
-                    if (name.length() == 0) {
-                        name = elementField.getName();
-                    }
+                    final Element tagAnnotation = elementField.getAnnotation(Element.class);
+                    final String name = getElementName(tagAnnotation, elementField);
                     if (o != null) {
                         if (o instanceof Collection) {
                             for (Object item : (Collection) o) {
-                                    elementValue.append(toXML(item, name));
+                                elementValue.append(toXML(item, name));
                             }
                         } else {
                             elementValue.append(toXML(o, name));
@@ -157,7 +173,7 @@ class Object2StringHelper {
                 }
             }
         }
-        stringBuffer.append(getTagEndString(tag, elementValue.toString()));
+        stringBuffer.append(getTagEndString(elementName, elementValue.toString()));
         return stringBuffer.toString();
     }
 

@@ -13,6 +13,6 @@ public class DatabaseHelper {
     }
 
     public <E> Dao<E> getDao(Class<E> modelClass) {
-        return new DaoImpl<>(sqLiteHelper.getWritableDatabase(), modelClass);
+        return new DaoImpl<E>(sqLiteHelper, modelClass);
     }
 }

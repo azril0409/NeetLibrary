@@ -6,7 +6,7 @@ package library.neetoffice.com.xmlparser;
 public final class ElementValue extends ElementMap  {
     @Attribute
     AttributeMap attribute = new AttributeMap();
-    @Element
+    @Content
     String text = "";
 
     public AttributeMap getAttributes() {

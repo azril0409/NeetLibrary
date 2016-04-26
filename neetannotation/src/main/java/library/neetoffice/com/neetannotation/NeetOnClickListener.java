@@ -28,10 +28,10 @@ class NeetOnClickListener implements View.OnClickListener {
             if (View.class.isAssignableFrom(c[0])) {
                 d = 1;
             } else {
-                throw new BindExcetion(b.getName() + " neet  no-arg or View parameter");
+                throw new BindExcetion(b.getName() + " neet  () or (View) parameter");
             }
         } else {
-            throw new BindExcetion(b.getName() + " neet  no-arg or View parameter");
+            throw new BindExcetion(b.getName() + " neet  () or (View) parameter");
         }
     }
 

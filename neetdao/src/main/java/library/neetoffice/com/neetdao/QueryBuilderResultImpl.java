@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * Created by Mac on 2016/03/12.
  */
 public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
-    private final SQLiteDatabase db;
+    private final SQLiteHelper help;
     private final Class modelClass;
     private final HashMap<String, Field> map;
     protected String selection;
@@ -20,11 +21,12 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
     private int maxRows = Integer.MAX_VALUE;
     private int startRow = 0;
 
-    protected QueryBuilderResultImpl(SQLiteDatabase db, Class modelClass) {
-        this.db = db;
+    protected QueryBuilderResultImpl(SQLiteHelper help, Class modelClass) {
+        this.help = help;
         this.modelClass = modelClass;
         map = new HashMap<>();
-        for (Field field : modelClass.getDeclaredFields()) {
+        final Collection<Field> fields = Util.getFields(modelClass);
+        for (Field field : fields) {
             try {
                 final String name = Util.getColumnName(field);
                 map.put(name, field);
@@ -33,7 +35,7 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
         }
     }
 
-    private Cursor query() {
+    private Cursor query(SQLiteDatabase db) {
         if (startRow == 0 && maxRows == Integer.MAX_VALUE) {
             return db.query(Util.getTable(modelClass), null, selection, null, null, null, orderBy);
         } else {
@@ -55,23 +57,21 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
 
     @Override
     public int count() {
-        final Cursor cursor = query();
-        return cursor.getCount();
+        final SQLiteDatabase db = help.getReadableDatabase();
+        final Cursor cursor = query(db);
+        final int count = cursor.getCount();
+        cursor.close();
+        db.close();
+        return count;
     }
 
     @Override
     public List<E> list() {
+        final SQLiteDatabase db = help.getReadableDatabase();
         final ArrayList<E> list = new ArrayList<>();
-        final Cursor cursor = query();
+        final Cursor cursor = query(db);
         final int count = cursor.getCount();
-        final HashMap<String, Integer> columnIndexMap = new HashMap<>();
-        for (String columnName : map.keySet()) {
-            try {
-                final int index = cursor.getColumnIndexOrThrow(columnName);
-                columnIndexMap.put(columnName, index);
-            } catch (IllegalArgumentException e) {
-            }
-        }
+        final HashMap<String, Integer> columnIndexMap = getColumnIndexMap(cursor);
         if (count > 0 && cursor.moveToFirst()) {
             do {
                 try {
@@ -81,13 +81,40 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
                 }
             } while (cursor.moveToNext());
         }
+        cursor.close();
+        db.close();
         return list;
     }
 
     @Override
     public E one() {
-        final Cursor cursor = query();
+        final SQLiteDatabase db = help.getReadableDatabase();
+        final Cursor cursor = query(db);
         final int count = cursor.getCount();
+        final HashMap<String, Integer> columnIndexMap = getColumnIndexMap(cursor);
+        E item = null;
+        if (count > 0 && cursor.moveToFirst()) {
+            try {
+                item = getObject(columnIndexMap, cursor);
+            } catch (InstantiationException e) {
+            } catch (IllegalAccessException e) {
+            } finally {
+                cursor.close();
+            }
+        }
+        db.close();
+        return item;
+    }
+
+    @Override
+    public int delete() {
+        final SQLiteDatabase db = help.getWritableDatabase();
+        final int count = db.delete(Util.getTable(modelClass), selection, null);
+        db.close();
+        return count;
+    }
+
+    HashMap<String, Integer> getColumnIndexMap(Cursor cursor) {
         final HashMap<String, Integer> columnIndexMap = new HashMap<>();
         for (String columnName : map.keySet()) {
             try {
@@ -96,20 +123,9 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
             } catch (IllegalArgumentException e) {
             }
         }
-        if (count > 0 && cursor.moveToFirst()) {
-            try {
-                return getObject(columnIndexMap, cursor);
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            }
-        }
-        return null;
+        return columnIndexMap;
     }
 
-    @Override
-    public int delete() {
-        return db.delete(Util.getTable(modelClass), selection, null);
-    }
 
     E getObject(HashMap<String, Integer> columnIndexMap, Cursor cursor) throws IllegalAccessException, InstantiationException {
         final Object object = modelClass.newInstance();

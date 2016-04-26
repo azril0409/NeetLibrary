@@ -36,16 +36,31 @@ abstract class BindFragment {
                     bindViewById(a, e, g);
                     BindField.bindBean(a, g, a.getContext());
                     BindField.bindRootContext(a, g, a.getContext());
+                    BindField.bindResString(a, g, a.getResources());
+                    BindField.bindResStringArray(a, g, a.getResources());
+                    BindField.bindResBoolean(a, g, a.getResources());
+                    BindField.bindResDimen(a, g, a.getResources());
+                    BindField.bindResInteger(a, g, a.getResources());
+                    BindField.bindResColor(a, g, a.getResources(), a.getContext().getTheme());
+                    BindField.bindResDrawable(a, g, a.getResources(), a.getContext().getTheme());
+                    BindField.bindResAnimation(a, g, a.getContext());
+                    BindField.bindResLayoutAnimation(a, g, a.getContext());
                     bindArgument(a, g);
                     BindField.bindSaveInstance(a, g, w);
                 }
                 final Method[] h = c.getDeclaredMethods();
+                final NeetTouchListener l = new NeetTouchListener(a);
                 for (Method i : h) {
                     BindMethod.bindClick(a, e, i);
                     BindMethod.bindLongClick(a, e, i);
-                    BindMethod.bindTouch(a, e, i);
+                    BindMethod.bindTouch(a, e, i,l);
+                    BindMethod.bindTouchDown(a, e, i, l);
+                    BindMethod.bindTouchMove(a, e, i, l);
+                    BindMethod.bindTouchUp(a, e, i, l);
                     BindMethod.bindItemClick(a, e, i);
                     BindMethod.bindCheckedChange(a, e, i);
+                    BindMethod.bindFocusChange(a, e, i);
+                    BindMethod.bindTextChange(a, e, i);
                 }
             }
             c = c.getSuperclass();

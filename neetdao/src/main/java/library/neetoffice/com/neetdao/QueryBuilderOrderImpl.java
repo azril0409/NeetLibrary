@@ -1,18 +1,16 @@
 package library.neetoffice.com.neetdao;
 
-import android.database.sqlite.SQLiteDatabase;
-
 /**
  * Created by Mac on 2016/03/12.
  */
 class QueryBuilderOrderImpl<E> extends QueryBuilderResultImpl<E> implements QueryBuilderOrder<E> {
 
-    protected QueryBuilderOrderImpl(SQLiteDatabase db, Class modelClass) {
-        super(db, modelClass);
+    protected QueryBuilderOrderImpl(SQLiteHelper help, Class modelClass) {
+        super(help, modelClass);
     }
 
     @Override
-    public QueryBuilderResult orderAsc(String fieldName) {
+    public QueryBuilderResult<E>  orderAsc(String fieldName) {
         if (fieldName == null) {
             return this;
         }
@@ -21,7 +19,7 @@ class QueryBuilderOrderImpl<E> extends QueryBuilderResultImpl<E> implements Quer
     }
 
     @Override
-    public QueryBuilderResult orderDesc(String fieldName) {
+    public QueryBuilderResult<E>  orderDesc(String fieldName) {
         if (fieldName == null) {
             return this;
         }

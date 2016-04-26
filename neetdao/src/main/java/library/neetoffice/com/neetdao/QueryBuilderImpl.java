@@ -8,10 +8,10 @@ import java.util.Iterator;
 /**
  * Created by Mac on 2016/03/12.
  */
-public class QueryBuilderImpl<E> extends QueryBuilderOrderImpl<E>implements QueryBuilder<E> {
+public class QueryBuilderImpl<E> extends QueryBuilderOrderImpl<E> implements QueryBuilder<E> {
 
-    QueryBuilderImpl(SQLiteDatabase db, Class modelClass) {
-        super(db, modelClass);
+    QueryBuilderImpl(SQLiteHelper help, Class modelClass) {
+        super(help, modelClass);
     }
 
     @Override

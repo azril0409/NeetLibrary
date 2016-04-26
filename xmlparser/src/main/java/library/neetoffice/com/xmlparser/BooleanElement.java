@@ -4,7 +4,7 @@ package library.neetoffice.com.xmlparser;
  * Created by Deo on 2016/3/11.
  */
 public final class BooleanElement {
-    @Element
+    @Content
     boolean value;
 
     public BooleanElement() {

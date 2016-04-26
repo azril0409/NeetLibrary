@@ -14,10 +14,6 @@ import java.util.List;
  */
 public interface Dao<E> {
 
-    void beginTransaction();
-
-    void commitTransaction();
-
     QueryBuilder<E> queryBuilder();
 
     int count();

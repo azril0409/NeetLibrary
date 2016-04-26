@@ -4,7 +4,7 @@ package library.neetoffice.com.xmlparser;
  * Created by Deo on 2016/3/10.
  */
 public final class IntegerElement {
-    @Element
+    @Content
     int value;
 
     public IntegerElement() {

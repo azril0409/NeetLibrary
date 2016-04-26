@@ -28,7 +28,6 @@ class SQLiteHelper extends SQLiteOpenHelper {
             try {
                 createTable(db, modelClass);
             } catch (NeetSQLException e) {
-                Log.e(Util.TAG, e.toString());
             }
         }
     }
@@ -43,7 +42,7 @@ class SQLiteHelper extends SQLiteOpenHelper {
                 final Cursor cursor = db.rawQuery("SELECT * FROM " + table, null);
                 if (isUpdate(cursor, modelClass)) {
                     cursor.close();
-                    final DaoImpl dao = new DaoImpl(db, modelClass);
+                    final DaoImpl dao = new DaoImpl(this, modelClass);
                     List list = dao.loadAll();
                     dropTable(db, modelClass);
                     createTable(db, modelClass);
@@ -57,10 +56,6 @@ class SQLiteHelper extends SQLiteOpenHelper {
                 createTable(db, modelClass);
             }
         }
-    }
-
-    public <E> Dao<E> getDao(Class<E> modelClass) {
-        return new DaoImpl<>(getWritableDatabase(), modelClass);
     }
 
     private static boolean isUpdate(Cursor cursor, Class<?> modelClass) {

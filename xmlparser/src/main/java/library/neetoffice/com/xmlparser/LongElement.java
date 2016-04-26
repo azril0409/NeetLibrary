@@ -4,7 +4,7 @@ package library.neetoffice.com.xmlparser;
  * Created by Deo on 2016/3/11.
  */
 public class LongElement {
-    @Element
+    @Content
     long value;
 
     public LongElement() {

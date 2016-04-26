@@ -4,7 +4,7 @@ package library.neetoffice.com.xmlparser;
  * Created by Deo on 2016/3/9.
  */
 public final class StringElement {
-    @Element
+    @Content
     String text;
 
     public StringElement() {

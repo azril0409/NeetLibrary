@@ -1,2 +1,2 @@
-include ':genericadapter', ':androidcamerautil', ':genericrecycleradapter', ':genericadaptersample', ':xmlparser', ':neetdao', ':neetdaosample', ':neetannotation', ':codeutil', ':codeutilsample', ':neetdao-sqlcipher'
+include ':androidcamerautil', ':xmlparser', ':neetdao', ':neetdaosample', ':neetannotation', ':codeutil', ':codeutilsample', ':neetdao-sqlcipher'
 

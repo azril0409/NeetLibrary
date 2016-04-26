@@ -2,40 +2,31 @@ package library.neetoffice.com.neetdao;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by Mac on 2016/03/12.
  */
 class DaoImpl<E> implements Dao<E> {
-    private final SQLiteDatabase db;
+    private final SQLiteHelper sqLiteHelper;
     private final Class<E> modelClass;
+    private final Collection<Field> fields;
 
-    DaoImpl(SQLiteDatabase db, Class<E> modelClass) {
-        this.db = db;
+    DaoImpl(SQLiteHelper sqLiteHelper, Class<E> modelClass) {
+        this.sqLiteHelper = sqLiteHelper;
         this.modelClass = modelClass;
-    }
-
-    public void beginTransaction() {
-        db.beginTransaction();
-    }
-
-    public void commitTransaction() {
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        fields = Util.getFields(modelClass);
     }
 
     private ContentValues getContentValues(E entity) {
         final ContentValues cv = new ContentValues();
-        final Field[] fields = modelClass.getDeclaredFields();
         for (Field field : fields) {
             try {
-                final DatabaseField databaseField = field.getAnnotation(DatabaseField.class);
-                if (databaseField == null) {
+                if (field.getAnnotation(DatabaseField.class) == null) {
                     continue;
                 }
                 field.setAccessible(true);
@@ -82,22 +73,25 @@ class DaoImpl<E> implements Dao<E> {
 
     @Override
     public QueryBuilder<E> queryBuilder() {
-        return new QueryBuilderImpl<>(db, modelClass);
+        return new QueryBuilderImpl<E>(sqLiteHelper, modelClass);
     }
 
     @Override
     public int count() {
-        return new QueryBuilderImpl<E>(db, modelClass).count();
+        return new QueryBuilderImpl<E>(sqLiteHelper, modelClass).count();
     }
 
     @Override
     public long insert(E entity) {
-        return db.insert(Util.getTable(modelClass), null, getContentValues(entity));
+        final SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
+        final long count = db.insert(Util.getTable(modelClass), null, getContentValues(entity));
+        db.close();
+        return count;
     }
 
     @Override
     public long insertOrReplace(E entity) {
-        final Field[] fields = modelClass.getDeclaredFields();
+        final SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
         Field id_Field = null;
         Id annotation = null;
         for (Field f : fields) {
@@ -107,57 +101,62 @@ class DaoImpl<E> implements Dao<E> {
                 break;
             }
         }
+        long count = 0;
         if (id_Field != null && annotation != null) {
             id_Field.setAccessible(true);
             try {
-                Object object = id_Field.get(entity);
+                final Object object = id_Field.get(entity);
                 if (object != null) {
-                    return db.update(Util.getTable(modelClass), getContentValues(entity), Where.eq(annotation.value(), object).selection, null);
+                    count = db.update(Util.getTable(modelClass), getContentValues(entity), Where.eq(annotation.value(), object).selection, null);
                 } else {
-                    return db.insert(Util.getTable(modelClass), null, getContentValues(entity));
+                    count = db.insert(Util.getTable(modelClass), null, getContentValues(entity));
                 }
             } catch (IllegalAccessException e) {
             }
         } else {
-            return db.insert(Util.getTable(modelClass), null, getContentValues(entity));
+            count = db.insert(Util.getTable(modelClass), null, getContentValues(entity));
         }
-        return 0;
+        db.close();
+        return count;
     }
 
     @Override
     public int update(E entity) {
-        final Field[] fields = modelClass.getDeclaredFields();
+        final SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
         Field id_Field = null;
         Id annotation = null;
         for (Field f : fields) {
-            annotation = f.getAnnotation(Id.class);
-            if (annotation != null) {
+            final Id idAnnotation = f.getAnnotation(Id.class);
+            if (idAnnotation != null) {
+                annotation = idAnnotation;
                 id_Field = f;
                 break;
             }
         }
+        int count = 0;
         if (id_Field != null && annotation != null) {
             id_Field.setAccessible(true);
             try {
                 final Object value = id_Field.get(entity);
                 if (value != null) {
-                    return db.update(Util.getTable(modelClass), getContentValues(entity), Where.eq(annotation.value(), value).selection, null);
+                    count = db.update(Util.getTable(modelClass), getContentValues(entity), Where.eq(annotation.value(), value).selection, null);
                 }
             } catch (IllegalAccessException e) {
             }
         }
-        return 0;
+        db.close();
+        return count;
     }
 
     @Override
     public int delete(E entity) {
-        ArrayList<Where> wheres = new ArrayList<>();
-        final Field[] fields = modelClass.getDeclaredFields();
+        final ArrayList<Where> wheres = new ArrayList<>();
         Field id_Field = null;
         Id annotation = null;
         for (Field f : fields) {
-            annotation = f.getAnnotation(Id.class);
-            if (annotation != null) {
+            final Id idAnnotation = f.getAnnotation(Id.class);
+            if (idAnnotation != null) {
+                annotation = idAnnotation;
                 id_Field = f;
             } else {
                 try {
@@ -168,28 +167,29 @@ class DaoImpl<E> implements Dao<E> {
                 }
             }
         }
+        int count = 0;
         if (id_Field != null && annotation != null) {
             id_Field.setAccessible(true);
             try {
                 final Object value = id_Field.get(entity);
                 if (value != null) {
-                    return new QueryBuilderImpl<E>(db, modelClass).where(Where.eq(annotation.value(), value)).delete();
+                    count = new QueryBuilderImpl<E>(sqLiteHelper, modelClass).where(Where.eq(annotation.value(), value)).delete();
                 }
             } catch (IllegalAccessException e) {
             }
         } else {
-            return new QueryBuilderImpl<E>(db, modelClass).where(wheres.toArray(new Where[wheres.size()])).delete();
+            count = new QueryBuilderImpl<E>(sqLiteHelper, modelClass).where(wheres.toArray(new Where[wheres.size()])).delete();
         }
-        return 0;
+        return count;
     }
 
     @Override
     public E load() {
-        return new QueryBuilderImpl<E>(db, modelClass).one();
+        return new QueryBuilderImpl<E>(sqLiteHelper, modelClass).one();
     }
 
     @Override
     public List<E> loadAll() {
-        return new QueryBuilderImpl<E>(db, modelClass).list();
+        return new QueryBuilderImpl<E>(sqLiteHelper, modelClass).list();
     }
 }

@@ -2,6 +2,7 @@ package library.neetoffice.com.neetannotation;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -62,26 +63,16 @@ public class Neet {
         BindView.onCreate(view);
     }
 
+    public static void onReceive(@NonNull BroadcastReceiver broadcastReceiver, Context context, Intent intent) {
+        BindBroadcastReceiver.onReceive(broadcastReceiver, context, intent);
+    }
+
     public static IntentBundle newIntent(Context context) {
         return new IntentBundle(context);
     }
 
-    public static void main(String[] args) {
-        Class<?> cls = B.class.getSuperclass();
-        System.out.println("cls = " + cls.getName());
-        Class<?> cls2 = cls.getSuperclass();
-        System.out.println("cls2 = " + cls2.getName());
-        Class<?> cls3 = cls2.getSuperclass();
-        System.out.println("cls3 = " + (cls3 == null ? "is null" : "is not null"));
+    public static ArgumentBundle newArgument() {
+        return new ArgumentBundle();
     }
 
-    ;
-
-    public static class A {
-
-    }
-
-    public static class B extends A {
-
-    }
 }

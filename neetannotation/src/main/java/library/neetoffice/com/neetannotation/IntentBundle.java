@@ -6,9 +6,9 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
@@ -26,8 +26,27 @@ public class IntentBundle {
         this.context = context;
     }
 
+    public Intent intent() {
+        return intent;
+    }
+
     public IntentBundle addCategory(String category) {
         intent.addCategory(category);
+        return this;
+    }
+
+    public IntentBundle setType(String type) {
+        intent.setType(type);
+        return this;
+    }
+
+    public IntentBundle setType(int flags) {
+        intent.setFlags(flags);
+        return this;
+    }
+
+    public IntentBundle addFlags(int flags) {
+        intent.addFlags(flags);
         return this;
     }
 
@@ -42,7 +61,6 @@ public class IntentBundle {
     }
 
     public IntentBundle putExtra(String name, char value) {
-        intent.putExtra(name, value);
         intent.putExtra(name, value);
         return this;
     }
@@ -188,6 +206,20 @@ public class IntentBundle {
         context.startActivity(intent);
     }
 
+    public void startActivityForResult(Activity activity, Class<? extends Activity> cls, int requestCode) {
+        intent.setClass(activity, cls);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    public void startActivityForResult(Activity activity, String action, int requestCode) {
+        intent.setAction(action);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    public void setResult(Activity activity) {
+        activity.setResult(Activity.RESULT_OK, intent);
+    }
+
     public void startService(Class<? extends Service> cls) {
         intent.setClass(context, cls);
         context.startService(intent);
@@ -196,6 +228,11 @@ public class IntentBundle {
     public void startService(String action) {
         intent.setAction(action);
         context.startService(intent);
+    }
+
+    public void bindService(Class<? extends Service> cls, ServiceConnection serviceConnection, int flags) {
+        intent.setClass(context, cls);
+        context.bindService(intent, serviceConnection, flags);
     }
 
     public void sendBroadcast(Class<? extends BroadcastReceiver> cls) {
@@ -208,13 +245,13 @@ public class IntentBundle {
         context.sendBroadcast(intent);
     }
 
-    public void startActivity(Class<? extends BroadcastReceiver> cls, @Nullable String receiverPermission) {
+    public void sendBroadcast(Class<? extends BroadcastReceiver> cls, @Nullable String receiverPermission) {
         intent.setClass(context, cls);
-        context.sendBroadcast(intent,receiverPermission);
+        context.sendBroadcast(intent, receiverPermission);
     }
 
-    public void startActivity(String action, @Nullable String receiverPermission) {
+    public void sendBroadcast(String action, @Nullable String receiverPermission) {
         intent.setAction(action);
-        context.sendBroadcast(intent,receiverPermission);
+        context.sendBroadcast(intent, receiverPermission);
     }
 }

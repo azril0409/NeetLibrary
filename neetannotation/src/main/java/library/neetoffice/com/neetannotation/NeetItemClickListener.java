@@ -34,10 +34,10 @@ class NeetItemClickListener implements AdapterView.OnItemClickListener {
                 d = 2;
                 f = c[0];
             } else {
-                throw new BindExcetion(b.getName() + " neet  no-arg or View parameter");
+                throw new BindExcetion(b.getName() + " neet  (position(index or object item)) or (View,position(index or object item)) parameter");
             }
         } else {
-            throw new BindExcetion(b.getName() + " neet  no-arg or View parameter");
+            throw new BindExcetion(b.getName() + " neet  (position(index or object item)) or (View,position(index or object item)) parameter");
         }
     }
 

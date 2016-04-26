@@ -28,7 +28,7 @@ class NeetCheckedChangeListener implements CompoundButton.OnCheckedChangeListene
             } else if (c[0] == Boolean.class) {
                 d = 0;
             } else {
-                throw new BindExcetion(b.getName() + " neet  boolean or (View,boolean) parameter");
+                throw new BindExcetion(b.getName() + " neet  (boolean) or (View,boolean) or (boolean,View) parameter");
             }
         } else if (c.length == 2) {
             if (View.class.isAssignableFrom(c[0])) {
@@ -36,10 +36,10 @@ class NeetCheckedChangeListener implements CompoundButton.OnCheckedChangeListene
             } else if (View.class.isAssignableFrom(c[1])) {
                 d = 2;
             } else {
-                throw new BindExcetion(b.getName() + " neet  boolean or (View,boolean) parameter");
+                throw new BindExcetion(b.getName() + " neet  (boolean) or (View,boolean) or (boolean,View) parameter");
             }
         } else {
-            throw new BindExcetion(b.getName() + " neet  boolean or (View,boolean) parameter");
+            throw new BindExcetion(b.getName() + " neet  (boolean) or (View,boolean) or (boolean,View) parameter");
         }
     }
 

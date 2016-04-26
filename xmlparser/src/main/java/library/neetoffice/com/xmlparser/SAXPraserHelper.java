@@ -30,74 +30,96 @@ class SAXPraserHelper extends DefaultHandler {
 
     SAXPraserHelper(Object object) throws XMLParserException {
         this.object = object;
-        final Tag tag = object.getClass().getAnnotation(Tag.class);
-        final String name = Object2StringHelper.getTagName(tag, object);
+        final Element element = object.getClass().getAnnotation(Element.class);
+        final String name = Object2StringHelper.getElementName(element, object);
         final String key = name + "_";
         tagTemp.put(key, object);
         if (object instanceof ElementMap) {
             elementMapTemp.put(key, (ElementMap) object);
         }
-        final Field[] fields = object.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            analyzeField(object, field, name + "_");
+        final ArrayList<Class<?>> classes = new ArrayList<>();
+        Class<?> c = object.getClass();
+        while (c != null) {
+            classes.add(c);
+            c = c.getSuperclass();
+        }
+        final int count = classes.size();
+        for (int i = 0; i < count; i++) {
+            final Class<?> cls = classes.get(count - i - 1);
+            final Field[] fields = cls.getDeclaredFields();
+            for (Field field : fields) {
+                analyzeField(object, field, name + "_");
+            }
         }
     }
-
 
     private void analyzeField(Object object, Field field, String xmlPath) throws XMLParserException {
         field.setAccessible(true);
         if (object instanceof ElementMap) {
             elementMapTemp.put(xmlPath, (ElementMap) object);
         }
-        final Tag tag = field.getAnnotation(Tag.class);
         final Element element = field.getAnnotation(Element.class);
+        final Content content = field.getAnnotation(Content.class);
         final Attribute attribute = field.getAnnotation(Attribute.class);
-        if (tag != null) {
+        if (element != null) {
             final Class type = field.getType();
             if (type == Collection.class) {
                 try {
-                    addCollection(new ArrayList(), field, tag, xmlPath);
+                    addCollection(new ArrayList(), field, element, xmlPath);
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
             } else if (type == List.class) {
                 try {
-                    addCollection(new ArrayList(), field, tag, xmlPath);
+                    addCollection(new ArrayList(), field, element, xmlPath);
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
             } else if (type == ArrayList.class) {
                 try {
-                    addCollection(new ArrayList(), field, tag, xmlPath);
+                    addCollection(new ArrayList(), field, element, xmlPath);
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
             } else if (type == Set.class) {
                 try {
-                    addCollection(new HashSet(), field, tag, xmlPath);
+                    addCollection(new HashSet(), field, element, xmlPath);
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
             } else if (type == HashSet.class) {
                 try {
-                    addCollection(new HashSet(), field, tag, xmlPath);
+                    addCollection(new HashSet(), field, element, xmlPath);
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
             } else if (type == TreeSet.class) {
                 try {
-                    addCollection(new TreeSet(), field, tag, xmlPath);
+                    addCollection(new TreeSet(), field, element, xmlPath);
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
+            } else if (Object2StringHelper.isContent(type)) {
+                final String name = Object2StringHelper.getElementName(element, field);
+                final String key = xmlPath + name + "_";
+                elementTemp.put(key, field);
+                tagTemp.put(key, object);
             } else {
                 try {
-                    final String name = Object2StringHelper.getTagName(tag, field);
+                    final String name = Object2StringHelper.getElementName(element, field);
                     final Object fieldObject;
-                    if (tag.model() == DefaultElement.class) {
-                        fieldObject = field.getType().newInstance();
+                    if (element.model() == DefaultElement.class) {
+                        try {
+                            fieldObject = field.getType().newInstance();
+                        } catch (InstantiationException e) {
+                            throw new XMLParserException(field.getType().getName() + " doesn't have no-arg(default) constructor");
+                        }
                     } else {
-                        fieldObject = tag.model().newInstance();
+                        try {
+                            fieldObject = element.model().newInstance();
+                        } catch (InstantiationException e) {
+                            throw new XMLParserException(element.model().getName() + " doesn't have no-arg(default) constructor");
+                        }
                     }
                     final String key = xmlPath + name + "_";
                     field.set(object, fieldObject);
@@ -106,23 +128,21 @@ class SAXPraserHelper extends DefaultHandler {
                     for (Field f : fields) {
                         analyzeField(fieldObject, f, key);
                     }
-                } catch (InstantiationException e) {
-                    throw new XMLParserException(type.getName() + " doesn't have no-arg(default) constructor");
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
             }
-        } else if (element != null) {
+        } else if (content != null) {
             final Class type = field.getType();
-            if (Object2StringHelper.isElement(type)) {
+            if (Object2StringHelper.isContent(type)) {
                 elementTemp.put(xmlPath, field);
             }
         } else if (attribute != null) {
-            if (Object2StringHelper.isElement(field.getType())) {
+            if (Object2StringHelper.isContent(field.getType())) {
                 attributeTemp.put(xmlPath + Object2StringHelper.getAttributeName(attribute, field), field);
             } else if (field.getType() == AttributeMap.class) {
                 try {
-                    AttributeMap attributeMap = new AttributeMap();
+                    final AttributeMap attributeMap = new AttributeMap();
                     field.set(object, attributeMap);
                     attributeMapTemp.put(xmlPath, attributeMap);
                 } catch (IllegalAccessException e) {
@@ -131,18 +151,23 @@ class SAXPraserHelper extends DefaultHandler {
             }
         } else {
             final Class<?> typeClass = field.getType();
-            final Tag typeTag = typeClass.getAnnotation(Tag.class);
+            final Element typeTag = typeClass.getAnnotation(Element.class);
             if (typeTag != null) {
                 try {
-                    String name = tag.value();
-                    if (name.length() == 0) {
-                        name = field.getName();
-                    }
+                    final String name = Object2StringHelper.getElementName(element, field);
                     final Object fieldObject;
-                    if (tag.model() == DefaultElement.class) {
-                        fieldObject = field.getType().newInstance();
+                    if (element.model() == DefaultElement.class) {
+                        try {
+                            fieldObject = field.getType().newInstance();
+                        } catch (InstantiationException e) {
+                            throw new XMLParserException(field.getType().getName() + " doesn't have no-arg(default) constructor");
+                        }
                     } else {
-                        fieldObject = tag.model().newInstance();
+                        try {
+                            fieldObject = element.model().newInstance();
+                        } catch (InstantiationException e) {
+                            throw new XMLParserException(element.model().getName() + " doesn't have no-arg(default) constructor");
+                        }
                     }
                     final String key = xmlPath + name + "_";
                     field.set(object, fieldObject);
@@ -151,8 +176,6 @@ class SAXPraserHelper extends DefaultHandler {
                     for (Field f : fields) {
                         analyzeField(fieldObject, f, key);
                     }
-                } catch (InstantiationException e) {
-                    throw new XMLParserException(typeClass.getName() + " doesn't have no-arg(default) constructor");
                 } catch (IllegalAccessException e) {
                     throw new XMLParserException(e.getMessage());
                 }
@@ -160,20 +183,17 @@ class SAXPraserHelper extends DefaultHandler {
         }
     }
 
-    private void addCollection(Collection collection, Field field, Tag tag, String xmlPath) throws IllegalAccessException {
+    private void addCollection(Collection collection, Field field, Element element, String xmlPath) throws IllegalAccessException {
         field.set(object, collection);
-        if (tag.model() != DefaultElement.class) {
+        if (element.model() != DefaultElement.class) {
             try {
-                tag.model().newInstance();
+                element.model().newInstance();
             } catch (InstantiationException e) {
-                throw new XMLParserException(tag.model() + " doesn't have no-arg(default) constructor");
+                throw new XMLParserException(element.model() + " doesn't have no-arg(default) constructor");
             }
-            String name = tag.value();
-            if (name.length() == 0) {
-                name = field.getName();
-            }
+            final String name = Object2StringHelper.getElementName(element, field);
             final String key = xmlPath + name + "_";
-            typeTemp.put(key, tag.model());
+            typeTemp.put(key, element.model());
             collectionTemp.put(key, collection);
         }
     }
@@ -324,6 +344,9 @@ class SAXPraserHelper extends DefaultHandler {
         if (newElement == null) {
             return;
         }
+        if (Object2StringHelper.isContent(newElement.getClass())) {
+            return;
+        }
         final int length = attributes.getLength();
         for (int index = 0; index < length; index++) {
             final String attributeName = attributes.getQName(index);
@@ -361,8 +384,8 @@ class SAXPraserHelper extends DefaultHandler {
         final String key = getKey(qNames);
         if (characters.containsKey(key)) {
             final Object object = tagTemp.get(key);
-            Field field = elementTemp.get(key);
-            StringBuffer stringBuffer = characters.get(key);
+            final Field field = elementTemp.get(key);
+            final StringBuffer stringBuffer = characters.get(key);
             try {
                 addFieldValue(field, object, stringBuffer.toString());
             } catch (IllegalAccessException e) {

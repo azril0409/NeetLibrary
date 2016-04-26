@@ -15,84 +15,84 @@ import java.util.Iterator;
  */
 public abstract class EventBus {
     private static final Handler HANDLER = new Handler();
-    private static final HashMap<Object, HashMap<Class<?>, Method>> MAP = new HashMap<>();
-    private static final HashMap<Object, HashMap<Class<?>, Method>> BACKGROUND = new HashMap<>();
+    private static final HashMap<Object, HashMap<Class<?>, ArrayList<Method>>> MAP = new HashMap<>();
 
     public static void register(Object subscriber) {
         synchronized (MAP) {
-            synchronized (BACKGROUND) {
-                final Class<?> c = subscriber.getClass();
-                final Method[] a = c.getDeclaredMethods();
-                final HashMap<Class<?>, Method> hashMap = new HashMap<>();
-                final HashMap<Class<?>, Method> hashMap2 = new HashMap<>();
-                for (Method b : a) {
-                    final Subscribe d = b.getAnnotation(Subscribe.class);
-                    if (d != null) {
-                        final Class<?>[] e = b.getParameterTypes();
-                        if (e.length != 1) {
-                            throw new BindExcetion(b.getName() + " neet one parameter");
-                        }
-                        hashMap.put(e[0], b);
+            if (MAP.containsKey(subscriber)) {
+                return;
+            }
+            final Class<?> c = subscriber.getClass();
+            final HashMap<Class<?>, ArrayList<Method>> hashMap = new HashMap<>();
+            final HashMap<Class<?>, ArrayList<Method>> hashMap2 = new HashMap<>();
+            final Method[] a = c.getDeclaredMethods();
+            for (Method b : a) {
+                final Subscribe d = b.getAnnotation(Subscribe.class);
+                if (d != null) {
+                    final Class<?>[] e = b.getParameterTypes();
+                    if (e.length != 1) {
+                        throw new BindExcetion(b.getName() + " neet one parameter");
                     }
-                    final Subscribe f = b.getAnnotation(Subscribe.class);
-                    if (f != null) {
-                        final Class<?>[] e = b.getParameterTypes();
-                        if (e.length != 1) {
-                            throw new BindExcetion(b.getName() + " neet one parameter");
-                        }
-                        hashMap2.put(e[0], b);
+                    final Enforce enforce = d.value();
+                    if (hashMap.containsKey(e[0])) {
+                        ArrayList<Method> methods = hashMap.get(e[0]);
+                        methods.add(b);
+                    } else {
+                        ArrayList<Method> methods = new ArrayList<>();
+                        methods.add(b);
+                        hashMap.put(e[0], methods);
                     }
                 }
-                BACKGROUND.put(subscriber, hashMap);
-                MAP.put(subscriber, hashMap2);
             }
+            MAP.put(subscriber, hashMap);
         }
     }
 
     public static void unregister(Object subscriber) {
         synchronized (MAP) {
-            synchronized (BACKGROUND) {
-                MAP.remove(subscriber);
-                BACKGROUND.remove(subscriber);
-            }
+            MAP.remove(subscriber);
         }
     }
 
     public static void post(Object event) {
-        HANDLER.post(new Task(BACKGROUND,event));
-    }
-
-    public static void postOnBackground(Object event) {
-        new Thread(new Task(BACKGROUND,event)).start();
+        synchronized (MAP) {
+            final Class<?> c = event.getClass();
+            for (Object a : MAP.keySet()) {
+                final HashMap<Class<?>, ArrayList<Method>> b = MAP.get(a);
+                if (b.containsKey(c)) {
+                    ArrayList<Method> d = b.get(c);
+                    for (Method f : d) {
+                        final Subscribe s = f.getAnnotation(Subscribe.class);
+                        final Enforce e = s.value();
+                        if (Enforce.UIThread == e) {
+                            HANDLER.post(new Task(f, a, event));
+                        } else if (Enforce.Background == e) {
+                            new Thread(new Task(f, a, event)).start();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private static class Task implements Runnable {
+        final Method method;
+        final Object object;
         final Object event;
-        final HashMap<Object, HashMap<Class<?>, Method>> map;
 
-        private Task(HashMap<Object, HashMap<Class<?>, Method>> map, Object event) {
+        private Task(Method method, Object object, Object event) {
+            this.method = method;
+            this.object = object;
             this.event = event;
-            this.map = map;
         }
 
 
         @Override
         public void run() {
-            synchronized (MAP) {
-                synchronized (BACKGROUND) {
-                    final Class<?> c = event.getClass();
-                    for (Object object : map.keySet()) {
-                        final HashMap<Class<?>, Method> hashMap = map.get(object);
-                        if (map.containsKey(c)) {
-                            final Method method = hashMap.get(c);
-                            try {
-                                method.invoke(object, event);
-                            } catch (IllegalAccessException e) {
-                            } catch (InvocationTargetException e) {
-                            }
-                        }
-                    }
-                }
+            try {
+                method.invoke(object, event);
+            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException e) {
             }
         }
     }

@@ -6,53 +6,121 @@ import android.view.View;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 
 /**
  * Created by Deo on 2016/3/18.
  */
 class NeetTouchListener implements View.OnTouchListener {
-    final Object a;
-    final Method b;
-    final int d;
+    static class A {
+        int d;
+        Method b;
 
-    NeetTouchListener(Object a, Method b) {
-        this.a = a;
-        this.b = b;
-        if (b.getModifiers() != Modifier.PUBLIC) {
-            throw new BindExcetion("@library.neetoffice.com.neetannotation.Touch cannot be used on a non public element");
-        }
-        final Class<?>[] c = b.getParameterTypes();
-        if (c.length == 1) {
-            if (MotionEvent.class.isAssignableFrom(c[0])) {
-                d = 0;
-            } else {
-                throw new BindExcetion(b.getName() + " neet  MotionEvent or View,MotionEvent parameter");
-            }
-        } else if (c.length == 2) {
-            if (View.class.isAssignableFrom(c[0]) && MotionEvent.class.isAssignableFrom(c[1])) {
-                d = 1;
-            } else if (MotionEvent.class.isAssignableFrom(c[0]) && View.class.isAssignableFrom(c[1])) {
-                d = 2;
-            } else {
-                throw new BindExcetion(b.getName() + " neet  MotionEvent or View,MotionEvent parameter");
-            }
-        } else {
-            throw new BindExcetion(b.getName() + " neet  MotionEvent or View,MotionEvent parameter");
+        A(int d, Method b) {
+            this.d = d;
+            this.b = b;
         }
     }
 
+    final Object a;
+    final HashMap<Integer, A> b = new HashMap<>();
+    final HashMap<Integer, A> c = new HashMap<>();
+    final HashMap<Integer, A> d = new HashMap<>();
+    final HashMap<Integer, A> f = new HashMap<>();
+
+    NeetTouchListener(Object a) {
+        this.a = a;
+    }
+
+    private A createA(Method b, String n) {
+        final int d;
+        if (b.getModifiers() != Modifier.PUBLIC) {
+            throw new BindExcetion("@library.neetoffice.com.neetannotation." + n + " cannot be used on a non public element");
+        }
+        final Class<?>[] c = b.getParameterTypes();
+        if (c.length == 0) {
+            d = 0;
+        } else if (c.length == 1) {
+            if (View.class.isAssignableFrom(c[0])) {
+                d = 1;
+            } else if (MotionEvent.class.isAssignableFrom(c[0])) {
+                d = 2;
+            } else {
+                throw new BindExcetion(b.getName() + " neet  no parameter or View , MotionEvent parameter");
+            }
+        } else if (c.length == 2) {
+            if (View.class.isAssignableFrom(c[0]) && MotionEvent.class.isAssignableFrom(c[1])) {
+                d = 3;
+            } else if (MotionEvent.class.isAssignableFrom(c[0]) && View.class.isAssignableFrom(c[1])) {
+                d = 4;
+            } else {
+                throw new BindExcetion(b.getName() + " neet  no parameter or View , MotionEvent parameter");
+            }
+        } else {
+            throw new BindExcetion(b.getName() + " neet  no parameter or View , MotionEvent parameter");
+        }
+        return new A(d, b);
+    }
+
+    void addTouch(int i, Method b) {
+        this.b.put(i, createA(b, Touch.class.getSimpleName()));
+    }
+
+    void addTouchDown(int i, Method b) {
+        this.c.put(i, createA(b, TouchDown.class.getSimpleName()));
+    }
+
+    void addTouchMove(int i, Method b) {
+        this.d.put(i, createA(b, TouchMove.class.getSimpleName()));
+    }
+
+    void addTouchUp(int i, Method b) {
+        this.f.put(i, createA(b, TouchUp.class.getSimpleName()));
+    }
+
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouch(View v, MotionEvent h) {
+        boolean r = false;
+        if (MotionEvent.ACTION_DOWN == h.getAction()) {
+            if (b.containsKey(v.getId())) {
+                r = r | doA(b.get(v.getId()), v, h);
+            }
+            if (c.containsKey(v.getId())) {
+                r = r | doA(c.get(v.getId()), v, h);
+            }
+        } else if (MotionEvent.ACTION_MOVE == h.getAction()) {
+            if (b.containsKey(v.getId())) {
+                r = r | doA(b.get(v.getId()), v, h);
+            }
+            if (d.containsKey(v.getId())) {
+                r = r | doA(d.get(v.getId()), v, h);
+            }
+        } else if (MotionEvent.ACTION_UP == h.getAction()) {
+            if (b.containsKey(v.getId())) {
+                r = r | doA(b.get(v.getId()), v, h);
+            }
+            if (f.containsKey(v.getId())) {
+                r = r | doA(f.get(v.getId()), v, h);
+            }
+        }
+        return r;
+    }
+
+    private boolean doA(A a, View v, MotionEvent event) {
+        final int d = a.d;
+        final Method b = a.b;
         if (d == 0) {
             try {
                 if (b.getReturnType() == void.class) {
-                    b.invoke(a, event);
+                    b.invoke(a);
                 } else if (b.getReturnType() == boolean.class) {
-                    Object e = b.invoke(a, event);
+                    final Object e = b.invoke(a);
                     return (boolean) e;
                 } else if (b.getReturnType() == Boolean.class) {
-                    Object e = b.invoke(a, event);
-                    return (boolean) e;
+                    final Object e = b.invoke(a);
+                    if (e != null) {
+                        return (boolean) e;
+                    }
                 }
             } catch (IllegalAccessException e) {
             } catch (InvocationTargetException e) {
@@ -60,13 +128,15 @@ class NeetTouchListener implements View.OnTouchListener {
         } else if (d == 1) {
             try {
                 if (b.getReturnType() == void.class) {
-                    b.invoke(a, v, event);
+                    b.invoke(a, v);
                 } else if (b.getReturnType() == boolean.class) {
-                    Object e = b.invoke(a, v, event);
+                    final Object e = b.invoke(a, v);
                     return (boolean) e;
                 } else if (b.getReturnType() == Boolean.class) {
-                    Object e = b.invoke(a, v, event);
-                    return (boolean) e;
+                    final Object e = b.invoke(a, v);
+                    if (e != null) {
+                        return (boolean) e;
+                    }
                 }
             } catch (IllegalAccessException e) {
             } catch (InvocationTargetException e) {
@@ -74,13 +144,47 @@ class NeetTouchListener implements View.OnTouchListener {
         } else if (d == 2) {
             try {
                 if (b.getReturnType() == void.class) {
-                    b.invoke(a, event, v);
+                    b.invoke(a, event);
                 } else if (b.getReturnType() == boolean.class) {
-                    Object e = b.invoke(a, event, v);
+                    final Object e = b.invoke(a, event);
                     return (boolean) e;
                 } else if (b.getReturnType() == Boolean.class) {
-                    Object e = b.invoke(a, event, v);
+                    final Object e = b.invoke(a, event);
+                    if (e != null) {
+                        return (boolean) e;
+                    }
+                }
+            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException e) {
+            }
+        } else if (d == 3) {
+            try {
+                if (b.getReturnType() == void.class) {
+                    b.invoke(a, v, event);
+                } else if (b.getReturnType() == boolean.class) {
+                    final Object e = b.invoke(a, v, event);
                     return (boolean) e;
+                } else if (b.getReturnType() == Boolean.class) {
+                    final Object e = b.invoke(a, v, event);
+                    if (e != null) {
+                        return (boolean) e;
+                    }
+                }
+            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException e) {
+            }
+        } else if (d == 4) {
+            try {
+                if (b.getReturnType() == void.class) {
+                    b.invoke(a, event, v);
+                } else if (b.getReturnType() == boolean.class) {
+                    final Object e = b.invoke(a, event, v);
+                    return (boolean) e;
+                } else if (b.getReturnType() == Boolean.class) {
+                    final Object e = b.invoke(a, event, v);
+                    if (e != null) {
+                        return (boolean) e;
+                    }
                 }
             } catch (IllegalAccessException e) {
             } catch (InvocationTargetException e) {

@@ -4,6 +4,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -36,8 +37,18 @@ public class XMLParser {
         }
     }
 
-    public String toXML(Object object) throws XMLParserException{
+    public String toXML(Object object) throws XMLParserException {
         return Object2StringHelper.toXML(object);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new XMLParser().toXML(new A()));
+    }
+
+    @Element("A")
+    static class A {
+        @Element
+        String a = "S";
     }
 
 }
