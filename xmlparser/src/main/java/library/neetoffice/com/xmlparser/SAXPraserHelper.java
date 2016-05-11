@@ -327,7 +327,9 @@ class SAXPraserHelper extends DefaultHandler {
             }
         } else if (elementTemp.containsKey(key) && tagTemp.containsKey(key)) {
             newElement = elementTemp.get(key);
-        } else if (elementMapTemp.containsKey(xmlPath)) {
+        }  else if (tagTemp.containsKey(key)) {
+            newElement = tagTemp.get(key);
+        }else if (elementMapTemp.containsKey(xmlPath)) {
             final ElementMap map = elementMapTemp.get(xmlPath);
             newElement = new ElementValue();
             elementMapTemp.put(key, (ElementMap) newElement);
@@ -353,6 +355,7 @@ class SAXPraserHelper extends DefaultHandler {
             if (attributeTemp.containsKey(attributeKey)) {
                 try {
                     final Field field = attributeTemp.get(key + attributeName);
+                    final Object object = tagTemp.get(key);
                     final String value = attributes.getValue(index);
                     if (field.getType() == AttributeMap.class) {
                         final AttributeMap map = (AttributeMap) field.get(object);
