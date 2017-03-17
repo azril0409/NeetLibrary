@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 /**
  * Created by Deo on 2016/3/18.
@@ -29,7 +27,7 @@ abstract class BindMethod {
             if (g == null) {
                 continue;
             }
-            g.setOnClickListener(new NeetOnClickListener(a, c));
+            g.setOnClickListener(new ClickListener(a, c));
         }
     }
 
@@ -44,7 +42,7 @@ abstract class BindMethod {
             if (g == null) {
                 continue;
             }
-            g.setOnClickListener(new NeetOnClickListener(a, c));
+            g.setOnClickListener(new ClickListener(a, c));
         }
     }
 
@@ -59,7 +57,7 @@ abstract class BindMethod {
             if (g == null) {
                 continue;
             }
-            g.setOnLongClickListener(new NeetLongClickListener(a, c));
+            g.setOnLongClickListener(new LongClickListener(a, c));
         }
     }
 
@@ -74,11 +72,11 @@ abstract class BindMethod {
             if (g == null) {
                 continue;
             }
-            g.setOnLongClickListener(new NeetLongClickListener(a, c));
+            g.setOnLongClickListener(new LongClickListener(a, c));
         }
     }
 
-    static void bindTouch(Activity a, Method c, NeetTouchListener l) {
+    static void bindTouch(Activity a, Method c, TouchListener l) {
         final Touch d = c.getAnnotation(Touch.class);
         if (d == null) {
             return;
@@ -94,7 +92,7 @@ abstract class BindMethod {
         }
     }
 
-    static void bindTouch(Object a, View b, Method c, NeetTouchListener l) {
+    static void bindTouch(Object a, View b, Method c, TouchListener l) {
         final Touch d = c.getAnnotation(Touch.class);
         if (d == null) {
             return;
@@ -110,7 +108,7 @@ abstract class BindMethod {
         }
     }
 
-    static void bindTouchDown(Activity a, Method c, NeetTouchListener l) {
+    static void bindTouchDown(Activity a, Method c, TouchListener l) {
         final TouchDown d = c.getAnnotation(TouchDown.class);
         if (d == null) {
             return;
@@ -126,7 +124,7 @@ abstract class BindMethod {
         }
     }
 
-    static void bindTouchDown(Object a, View b, Method c, NeetTouchListener l) {
+    static void bindTouchDown(Object a, View b, Method c, TouchListener l) {
         final TouchDown d = c.getAnnotation(TouchDown.class);
         if (d == null) {
             return;
@@ -142,7 +140,7 @@ abstract class BindMethod {
         }
     }
 
-    static void bindTouchMove(Activity a, Method c, NeetTouchListener l) {
+    static void bindTouchMove(Activity a, Method c, TouchListener l) {
         final TouchMove d = c.getAnnotation(TouchMove.class);
         if (d == null) {
             return;
@@ -158,7 +156,7 @@ abstract class BindMethod {
         }
     }
 
-    static void bindTouchMove(Object a, View b, Method c, NeetTouchListener l) {
+    static void bindTouchMove(Object a, View b, Method c, TouchListener l) {
         final TouchMove d = c.getAnnotation(TouchMove.class);
         if (d == null) {
             return;
@@ -174,7 +172,7 @@ abstract class BindMethod {
         }
     }
 
-    static void bindTouchUp(Activity a, Method c, NeetTouchListener l) {
+    static void bindTouchUp(Activity a, Method c, TouchListener l) {
         final TouchUp d = c.getAnnotation(TouchUp.class);
         if (d == null) {
             return;
@@ -190,7 +188,7 @@ abstract class BindMethod {
         }
     }
 
-    static void bindTouchUp(Object a, View b, Method c, NeetTouchListener l) {
+    static void bindTouchUp(Object a, View b, Method c, TouchListener l) {
         final TouchUp d = c.getAnnotation(TouchUp.class);
         if (d == null) {
             return;
@@ -218,7 +216,7 @@ abstract class BindMethod {
                 continue;
             }
             if (h instanceof AdapterView) {
-                ((AdapterView) h).setOnItemClickListener(new NeetItemClickListener(a, c));
+                ((AdapterView) h).setOnItemClickListener(new ItemClickListener(a, c));
             }
         }
     }
@@ -235,7 +233,7 @@ abstract class BindMethod {
                 continue;
             }
             if (h instanceof AdapterView) {
-                ((AdapterView) h).setOnItemClickListener(new NeetItemClickListener(a, c));
+                ((AdapterView) h).setOnItemClickListener(new ItemClickListener(a, c));
             }
         }
     }
@@ -251,8 +249,8 @@ abstract class BindMethod {
             if (h == null) {
                 continue;
             }
-            if (h instanceof AdapterView) {
-                ((CompoundButton) h).setOnCheckedChangeListener(new NeetCheckedChangeListener(a, c));
+            if (h instanceof CompoundButton) {
+                ((CompoundButton) h).setOnCheckedChangeListener(new CheckedChangeListener(a, c));
             }
         }
     }
@@ -269,7 +267,7 @@ abstract class BindMethod {
                 continue;
             }
             if (h instanceof CompoundButton) {
-                ((CompoundButton) h).setOnCheckedChangeListener(new NeetCheckedChangeListener(a, c));
+                ((CompoundButton) h).setOnCheckedChangeListener(new CheckedChangeListener(a, c));
             }
         }
     }
@@ -286,7 +284,7 @@ abstract class BindMethod {
                 continue;
             }
             if (h instanceof TextView) {
-                ((TextView) h).addTextChangedListener(new NeetTextWatcher(h, a, c));
+                ((TextView) h).addTextChangedListener(new TextChangeListener(h, a, c));
             }
         }
     }
@@ -303,7 +301,7 @@ abstract class BindMethod {
                 continue;
             }
             if (h instanceof TextView) {
-                ((TextView) h).addTextChangedListener(new NeetTextWatcher(h, a, c));
+                ((TextView) h).addTextChangedListener(new TextChangeListener(h, a, c));
             }
         }
     }
@@ -319,7 +317,7 @@ abstract class BindMethod {
             if (h == null) {
                 continue;
             }
-            h.setOnFocusChangeListener(new NeetFocusChangeListener(a, c));
+            h.setOnFocusChangeListener(new FocusChangeListener(a, c));
         }
     }
 
@@ -334,11 +332,11 @@ abstract class BindMethod {
             if (h == null) {
                 continue;
             }
-            h.setOnFocusChangeListener(new NeetFocusChangeListener(a, c));
+            h.setOnFocusChangeListener(new FocusChangeListener(a, c));
         }
     }
 
-    static void onActivityResult(Object a, int b, Intent c) {
+    static void onActivityResult(Object a, int b, int t, Intent c) {
         Class<?> d = a.getClass();
         do {
             final NActivity q = d.getAnnotation(NActivity.class);
@@ -351,6 +349,9 @@ abstract class BindMethod {
                         continue;
                     }
                     if (h.value() == b) {
+                        if (h.resultCode() != t) {
+                            continue;
+                        }
                         Class<?>[] i = g.getParameterTypes();
                         final Object[] o = new Object[i.length];
                         final Annotation[][] j = g.getParameterAnnotations();
@@ -385,9 +386,11 @@ abstract class BindMethod {
                             }
                         }
                         try {
-                            g.invoke(a, o);
+                            AnnotationUtil.invoke(g, a, o);
                         } catch (IllegalAccessException e) {
+                            e.printStackTrace();
                         } catch (InvocationTargetException e) {
+                            e.printStackTrace();
                         }
                     }
                 }

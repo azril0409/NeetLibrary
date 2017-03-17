@@ -1,5 +1,6 @@
 package library.neetoffice.com.neetdao;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -7,6 +8,7 @@ import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteOpenHelper;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -25,43 +27,6 @@ class SQLiteHelper extends SQLiteOpenHelper {
         this.password = password;
     }
 
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        for (Class<?> modelClass : modelClasses) {
-            try {
-                createTable(db, modelClass);
-            } catch (NeetSQLException e) {
-            }
-        }
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        for (Class<?> modelClass : modelClasses) {
-            final String table = Util.getTable(modelClass);
-            final Cursor masterCursor = db.rawQuery("SELECT name FROM sqlite_master WHERE TYPE = 'table' AND name= '" + table + "'", null);
-            if (masterCursor.getCount() > 0) {
-                db.beginTransaction();
-                final Cursor cursor = db.rawQuery("SELECT * FROM " + table, null);
-                if (isUpdate(cursor, modelClass)) {
-                    cursor.close();
-                    final DaoImpl dao = new DaoImpl(this, password, modelClass);
-                    List list = dao.loadAll();
-                    dropTable(db, modelClass);
-                    createTable(db, modelClass);
-                    for (Object o : list) {
-                        dao.insert(o);
-                    }
-                }
-                db.setTransactionSuccessful();
-                db.endTransaction();
-            } else {
-                createTable(db, modelClass);
-            }
-        }
-    }
-
     private static boolean isUpdate(Cursor cursor, Class<?> modelClass) {
         final Field[] fields = modelClass.getDeclaredFields();
         for (Field field : fields) {
@@ -76,12 +41,12 @@ class SQLiteHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    private static void dropTable(SQLiteDatabase db, Class<?> modelClass) {
+    static void dropTable(SQLiteDatabase db, Class<?> modelClass) {
         final String table = Util.getTable(modelClass);
         db.execSQL("DROP TABLE " + table);
     }
 
-    private static void createTable(SQLiteDatabase db, Class<?> modelClass) throws NeetSQLException {
+    static void createTable(SQLiteDatabase db, Class<?> modelClass) throws NeetSQLException {
         try {
             modelClass.newInstance();
         } catch (InstantiationException e) {
@@ -90,7 +55,7 @@ class SQLiteHelper extends SQLiteOpenHelper {
             throw new NeetSQLException(e.getMessage());
         }
         final String table = Util.getTable(modelClass);
-        final StringBuffer sql = new StringBuffer("CREATE TABLE ");
+        final StringBuffer sql = new StringBuffer("CREATE TABLE IF NOT EXISTS ");
         sql.append(table);
         sql.append(" (");
         final Collection<Field> fields = Util.getFields(modelClass);
@@ -163,5 +128,87 @@ class SQLiteHelper extends SQLiteOpenHelper {
         }
         sql.append(")");
         db.execSQL(sql.toString());
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        for (Class<?> modelClass : modelClasses) {
+            try {
+                createTable(db, modelClass);
+            } catch (NeetSQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        for (Class<?> modelClass : modelClasses) {
+            final String table = Util.getTable(modelClass);
+            final Cursor masterCursor = db.rawQuery("SELECT name FROM sqlite_master WHERE TYPE = 'table' AND name= '" + table + "'", null);
+            if (masterCursor.getCount() > 0) {
+                db.beginTransaction();
+                final Cursor cursor = db.rawQuery("SELECT * FROM " + table, null);
+                if (isUpdate(cursor, modelClass)) {
+                    final Collection<Field> fields = Util.getFields(modelClass);
+                    final List<ContentValues> list = new ArrayList();
+                    if (cursor.moveToFirst()) {
+                        do {
+                            final ContentValues values = new ContentValues();
+                            for (Field field : fields) {
+                                final String name = Util.getColumnName(field);
+                                final int index = cursor.getColumnIndex(name);
+                                if (index != -1) {
+                                    if (cursor.isNull(index)) {
+                                        continue;
+                                    }
+                                    if (field.getType() == Boolean.class) {
+                                        values.put(name, cursor.getInt(index));
+                                    } else if (field.getType() == boolean.class) {
+                                        values.put(name, cursor.getInt(index));
+                                    } else if (field.getType() == Short.class) {
+                                        values.put(name, cursor.getShort(index));
+                                    } else if (field.getType() == short.class) {
+                                        values.put(name, cursor.getShort(index));
+                                    } else if (field.getType() == Integer.class) {
+                                        values.put(name, cursor.getInt(index));
+                                    } else if (field.getType() == int.class) {
+                                        values.put(name, cursor.getInt(index));
+                                    } else if (field.getType() == Float.class) {
+                                        values.put(name, cursor.getFloat(index));
+                                    } else if (field.getType() == float.class) {
+                                        values.put(name, cursor.getFloat(index));
+                                    } else if (field.getType() == Double.class) {
+                                        values.put(name, cursor.getDouble(index));
+                                    } else if (field.getType() == double.class) {
+                                        values.put(name, cursor.getDouble(index));
+                                    } else if (field.getType() == Long.class) {
+                                        values.put(name, cursor.getLong(index));
+                                    } else if (field.getType() == long.class) {
+                                        values.put(name, cursor.getLong(index));
+                                    } else if (field.getType() == byte[].class) {
+                                        values.put(name, cursor.getBlob(index));
+                                    } else if (field.getType() == char[].class) {
+                                        values.put(name, cursor.getString(index));
+                                    } else if (field.getType() == String.class) {
+                                        values.put(name, cursor.getString(index));
+                                    }
+                                }
+                            }
+                        } while (cursor.moveToNext());
+                    }
+                    cursor.close();
+                    dropTable(db, modelClass);
+                    createTable(db, modelClass);
+                    for (ContentValues o : list) {
+                        db.insert(table, null, o);
+                    }
+                }
+                db.setTransactionSuccessful();
+                db.endTransaction();
+            } else {
+                createTable(db, modelClass);
+            }
+        }
     }
 }

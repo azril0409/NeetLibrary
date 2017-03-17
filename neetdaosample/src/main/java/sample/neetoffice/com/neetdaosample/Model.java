@@ -16,7 +16,7 @@ public class Model implements Parcelable {
     public static final String MESSAGE = "_MESSAGE";
 
     @Id
-    Long id;
+    private Long id;
 
     @DatabaseField(columnName = TITLE)
     private String title;

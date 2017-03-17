@@ -2,6 +2,8 @@ package library.neetoffice.com.neetdao;
 
 import android.content.Context;
 
+import net.sqlcipher.database.SQLiteDatabase;
+
 /**
  * Created by Deo on 2016/3/4.
  */
@@ -11,6 +13,7 @@ public abstract class DatabaseHelper {
 
     public DatabaseHelper(Context context, String name, String password, int version, Class<?>... modelClasses) {
         this.password = password;
+        SQLiteDatabase.loadLibs(context);
         sqLiteHelper = new SQLiteHelper(context, name, password, version, modelClasses);
     }
 

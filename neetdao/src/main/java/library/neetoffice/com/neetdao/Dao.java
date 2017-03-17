@@ -1,6 +1,7 @@
 package library.neetoffice.com.neetdao;
 
 import android.content.ContentValues;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -26,7 +27,11 @@ public interface Dao<E> {
 
     int delete(E entity);
 
-    E load();
+    List<E> list();
 
-    List<E> loadAll();
+    E one();
+
+    void create() throws NeetSQLException, SQLException;
+
+    void drop() throws NeetSQLException, SQLException;
 }

@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * Created by Deo on 2016/3/16.
  */
-public class Util {
+public abstract class Util {
     static final String TAG = "NeetDao";
 
     static String getTable(Class<?> modelClass) {

@@ -1,6 +1,5 @@
 package library.neetoffice.com.neetannotation;
 
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,18 +24,18 @@ abstract class BindView {
                     bindViewById(a, g);
                     BindField.bindBean(a, g, a.getContext());
                     BindField.bindRootContext(a, g, a.getContext());
-                    BindField.bindResString(a, g, a.getResources());
-                    BindField.bindResStringArray(a, g, a.getResources());
-                    BindField.bindResBoolean(a, g, a.getResources());
-                    BindField.bindResDimen(a, g, a.getResources());
-                    BindField.bindResInteger(a, g, a.getResources());
-                    BindField.bindResColor(a, g, a.getResources(), a.getContext().getTheme());
-                    BindField.bindResDrawable(a, g, a.getResources(), a.getContext().getTheme());
+                    BindField.bindResString(a, g, a.getContext());
+                    BindField.bindResStringArray(a, g, a.getContext());
+                    BindField.bindResBoolean(a, g, a.getContext());
+                    BindField.bindResDimen(a, g, a.getContext());
+                    BindField.bindResInteger(a, g, a.getContext());
+                    BindField.bindResColor(a, g, a.getContext(), a.getContext().getTheme());
+                    BindField.bindResDrawable(a, g, a.getContext(), a.getContext().getTheme());
                     BindField.bindResAnimation(a, g, a.getContext());
                     BindField.bindResLayoutAnimation(a, g, a.getContext());
                 }
                 final Method[] h = c.getDeclaredMethods();
-                final NeetTouchListener l = new NeetTouchListener(a);
+                final TouchListener l = new TouchListener(a);
                 for (Method i : h) {
                     BindMethod.bindClick(a, a, i);
                     BindMethod.bindLongClick(a, a, i);
@@ -59,13 +58,17 @@ abstract class BindView {
         if (c == null) {
             return;
         }
-        final View d = a.findViewById(c.value());
-        if (d != null) {
-            try {
-                b.setAccessible(true);
-                b.set(a, d);
-            } catch (IllegalAccessException e) {
+        try {
+            final View d = a.findViewById(FindResources.id(a.getContext(), c.value(), b));
+            if (d != null) {
+                AnnotationUtil.set(b, a, d);
             }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -1,5 +1,7 @@
 package library.neetoffice.com.neetannotation;
 
+import android.app.Activity;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,4 +15,6 @@ import java.lang.annotation.Target;
 public @interface OnActivityResult {
 
     int value();
+
+    int resultCode() default Activity.RESULT_OK;
 }

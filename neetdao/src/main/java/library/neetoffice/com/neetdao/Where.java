@@ -1,6 +1,5 @@
 package library.neetoffice.com.neetdao;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -113,5 +112,19 @@ public class Where {
      */
     public static Where notEq(String fieldName, Object value) {
         return new Where(String.format("%s <> '%s'", fieldName, getValue(value)));
+    }
+
+    public static Where group(Where where) {
+        return new Where("(" + where.selection + ")");
+    }
+
+    public Where AND(Where where) {
+        selection += " AND " + where.selection;
+        return this;
+    }
+
+    public Where OR(Where where) {
+        selection += " OR " + where.selection;
+        return this;
     }
 }

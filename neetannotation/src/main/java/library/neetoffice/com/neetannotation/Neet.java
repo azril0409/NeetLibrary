@@ -8,9 +8,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,10 +24,9 @@ public class Neet {
         BindActivity.onSaveInstanceState(activity, outState);
     }
 
-    public static void onActivityResult(@NonNull Activity activity, int requestCode, Intent data) {
-        BindMethod.onActivityResult(activity, requestCode, data);
+    public static void onActivityResult(@NonNull Activity activity, int requestCode, int resultCode, Intent data) {
+        BindMethod.onActivityResult(activity, requestCode, resultCode, data);
     }
-
 
     @TargetApi(Build.VERSION_CODES.M)
     public static View onCreateView(@NonNull android.app.Fragment fragment, ViewGroup container, Bundle savedInstanceState) {
@@ -43,8 +39,8 @@ public class Neet {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    public static void onActivityResult(@NonNull android.app.Fragment fragment, int requestCode, Intent data) {
-        BindMethod.onActivityResult(fragment, requestCode, data);
+    public static void onActivityResult(@NonNull android.app.Fragment fragment, int requestCode, int resultCode, Intent data) {
+        BindMethod.onActivityResult(fragment, requestCode, resultCode, data);
     }
 
     public static View onCreateView(@NonNull android.support.v4.app.Fragment fragment, ViewGroup container, Bundle savedInstanceState) {
@@ -55,8 +51,8 @@ public class Neet {
         BindFragmentv4.onSaveInstanceState(fragment, outState);
     }
 
-    public static void onActivityResult(@NonNull android.support.v4.app.Fragment fragment, int requestCode, Intent data) {
-        BindMethod.onActivityResult(fragment, requestCode, data);
+    public static void onActivityResult(@NonNull android.support.v4.app.Fragment fragment, int requestCode, int resultCode, Intent data) {
+        BindMethod.onActivityResult(fragment, requestCode, resultCode, data);
     }
 
     public static void onCreate(@NonNull ViewGroup view) {

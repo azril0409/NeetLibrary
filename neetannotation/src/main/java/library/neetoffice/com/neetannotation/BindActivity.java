@@ -2,16 +2,12 @@ package library.neetoffice.com.neetannotation;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
+import java.lang.reflect.Modifier;
 
 /**
  * Created by Deo on 2016/3/18.
@@ -32,13 +28,13 @@ abstract class BindActivity {
                     bindViewById(a, g);
                     BindField.bindBean(a, g, a);
                     BindField.bindRootContext(a, g, a);
-                    BindField.bindResString(a, g, a.getResources());
-                    BindField.bindResStringArray(a, g, a.getResources());
-                    BindField.bindResBoolean(a, g, a.getResources());
-                    BindField.bindResDimen(a, g, a.getResources());
-                    BindField.bindResInteger(a, g, a.getResources());
-                    BindField.bindResColor(a, g, a.getResources(), a.getTheme());
-                    BindField.bindResDrawable(a, g, a.getResources(), a.getTheme());
+                    BindField.bindResString(a, g, a);
+                    BindField.bindResStringArray(a, g, a);
+                    BindField.bindResBoolean(a, g, a);
+                    BindField.bindResDimen(a, g, a);
+                    BindField.bindResInteger(a, g, a);
+                    BindField.bindResColor(a, g, a, a.getTheme());
+                    BindField.bindResDrawable(a, g, a, a.getTheme());
                     BindField.bindResAnimation(a, g, a);
                     BindField.bindResLayoutAnimation(a, g, a);
                     bindExtra(a, g);
@@ -47,7 +43,7 @@ abstract class BindActivity {
                     }
                 }
                 final Method[] h = c.getDeclaredMethods();
-                final NeetTouchListener l = new NeetTouchListener(a);
+                final TouchListener l = new TouchListener(a);
                 for (Method i : h) {
                     BindMethod.bindClick(a, i);
                     BindMethod.bindLongClick(a, i);
@@ -70,13 +66,17 @@ abstract class BindActivity {
         if (c == null) {
             return;
         }
-        final View d = a.findViewById(c.value());
-        if (d != null) {
-            try {
-                b.setAccessible(true);
-                b.set(a, d);
-            } catch (IllegalAccessException e) {
+        try {
+            final View d = a.findViewById(FindResources.id(a, c.value(), b));
+            if (d != null) {
+                AnnotationUtil.set(b, a, d);
             }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
@@ -96,9 +96,9 @@ abstract class BindActivity {
         }
         final Object g = f.get(d);
         try {
-            b.setAccessible(true);
-            b.set(a, g);
+            AnnotationUtil.set(b, a, g);
         } catch (IllegalAccessException e1) {
+            e1.printStackTrace();
         }
     }
 
@@ -114,11 +114,13 @@ abstract class BindActivity {
             h = "_" + c.getName();
         }
         final Object f = b.get(h);
-        if (f != null) {
-            try {
-                c.set(a, f);
-            } catch (IllegalAccessException e) {
-            }
+        if (f == null) {
+            return;
+        }
+        try {
+            AnnotationUtil.set(c, a, f);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
@@ -139,75 +141,7 @@ abstract class BindActivity {
                     } else {
                         h = "_" + g.getName();
                     }
-                    try {
-                        final Object i = g.get(a);
-                        if (g.getType() == byte.class) {
-                            b.putByte(h, (byte) i);
-                        } else if (g.getType() == Byte.class) {
-                            b.putByte(h, (Byte) i);
-                        } else if (g.getType() == byte[].class) {
-                            b.putByteArray(h, (byte[]) i);
-                        } else if (g.getType() == boolean.class) {
-                            b.putBoolean(h, (boolean) i);
-                        } else if (g.getType() == Boolean.class) {
-                            b.putBoolean(h, (Boolean) i);
-                        } else if (g.getType() == boolean[].class) {
-                            b.putBooleanArray(h, (boolean[]) i);
-                        } else if (g.getType() == short.class) {
-                            b.putShort(h, (short) i);
-                        } else if (g.getType() == Short.class) {
-                            b.putShort(h, (Short) i);
-                        } else if (g.getType() == short[].class) {
-                            b.putShortArray(h, (short[]) i);
-                        } else if (g.getType() == int.class) {
-                            b.putInt(h, (int) i);
-                        } else if (g.getType() == Integer.class) {
-                            b.putInt(h, (Integer) i);
-                        } else if (g.getType() == int[].class) {
-                            b.putIntArray(h, (int[]) i);
-                        } else if (g.getType() == long.class) {
-                            b.putLong(h, (long) i);
-                        } else if (g.getType() == Long.class) {
-                            b.putLong(h, (Long) i);
-                        } else if (g.getType() == long[].class) {
-                            b.putLongArray(h, (long[]) i);
-                        } else if (g.getType() == float.class) {
-                            b.putFloat(h, (float) i);
-                        } else if (g.getType() == Float.class) {
-                            b.putFloat(h, (Float) i);
-                        } else if (g.getType() == float[].class) {
-                            b.putFloatArray(h, (float[]) i);
-                        } else if (g.getType() == double.class) {
-                            b.putDouble(h, (double) i);
-                        } else if (g.getType() == Double.class) {
-                            b.putDouble(h, (Double) i);
-                        } else if (g.getType() == double[].class) {
-                            b.putDoubleArray(h, (double[]) i);
-                        } else if (g.getType() == char.class) {
-                            b.putChar(h, (char) i);
-                        } else if (g.getType() == Character.class) {
-                            b.putChar(h, (Character) i);
-                        } else if (g.getType() == char[].class) {
-                            b.putCharArray(h, (char[]) i);
-                        } else if (g.getType() == String.class) {
-                            b.putString(h, (String) i);
-                        } else if (g.getType() == String[].class) {
-                            b.putStringArray(h, (String[]) i);
-                        } else if (g.getType() == CharSequence.class) {
-                            b.putCharSequence(h, (CharSequence) i);
-                        } else if (g.getType() == CharSequence[].class) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                                b.putCharSequenceArray(h, (CharSequence[]) i);
-                            }
-                        } else if (Parcelable.class.isAssignableFrom(g.getType())) {
-                            b.putParcelable(h, (Parcelable) i);
-                        } else if (Parcelable[].class.isAssignableFrom(g.getType())) {
-                            b.putParcelableArray(h, (Parcelable[]) i);
-                        } else if (g.getType() == ArrayList.class) {
-                            b.putSerializable(h, (ArrayList<?>) i);
-                        }
-                    } catch (IllegalAccessException e) {
-                    }
+                    BindBundle.addFieldToBundle(a, g, h, b);
                 }
             }
             c = c.getSuperclass();

@@ -1,5 +1,7 @@
 package library.neetoffice.com.neetdao;
 
+import net.sqlcipher.SQLException;
+
 import java.util.List;
 
 /**
@@ -19,7 +21,11 @@ public interface Dao<E> {
 
     int delete(E entity);
 
-    E load();
+    List<E> list();
 
-    List<E> loadAll();
+    E one();
+
+    void create() throws NeetSQLException, SQLException;
+
+    void drop() throws NeetSQLException, SQLException;
 }

@@ -8,6 +8,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import net.sqlcipher.database.SQLiteDatabase;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -40,17 +42,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Click(R.id.button1)
-    public void onClickNew(View view) {
+    void onClickNew(View view) {
         final Intent intent = new Intent(this, NewActivity.class);
         startActivity(intent);
     }
 
     @Click(R.id.button2)
-    public void onClickSearch() {
+    void onClickSearch() {
         final String text = editText.getText().toString();
         if (text.isEmpty()) {
             final long start = Calendar.getInstance().getTimeInMillis();
-            final List<Model> list = daoHelper.getModelDao().loadAll();
+            final List<Model> list = daoHelper.getModelDao().list();
             final long end = Calendar.getInstance().getTimeInMillis();
             Toast.makeText(this, "Time : " + (end - start) + " msec", Toast.LENGTH_SHORT).show();
             modelAdapter.setAll(list);

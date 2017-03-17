@@ -2,7 +2,11 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.3"
+
+    lintOptions {
+        abortOnError false
+    }
 
     defaultConfig {
         minSdkVersion 19
@@ -13,17 +17,17 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //https://www.zetetic.net/sqlcipher/sqlcipher-for-android/
+    compile 'net.zetetic:android-database-sqlcipher:3.5.6@aar'
 }
 
 
-def libname = 'NeetDAO-sqlcipher_105.jar'
+def libname = 'NeetDAO-sqlcipher_113.jar'
 task clearAar(type: Delete) {
     delete '../librarys/NeetDAO-sqlcipher/'
 }

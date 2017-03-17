@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="sample.neetoffice.com.neetdaosample">
+
+    <uses-sdk tools:overrideLibrary="library.neetoffice.com.neetdao" />
 
     <application
         android:allowBackup="true"

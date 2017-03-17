@@ -8,8 +8,8 @@ import java.util.Iterator;
  */
 public class QueryBuilderImpl<E> extends QueryBuilderOrderImpl<E> implements QueryBuilder<E> {
 
-    QueryBuilderImpl(SQLiteHelper help, String password, Class modelClass) {
-        super(help, password, modelClass);
+    QueryBuilderImpl(DatabaseManager manager, Class modelClass) {
+        super(manager, modelClass);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class QueryBuilderImpl<E> extends QueryBuilderOrderImpl<E> implements Que
             final Where where = iterator.next();
             stringBuffer.append(where.selection);
             if (iterator.hasNext()) {
-                stringBuffer.append(",");
+                stringBuffer.append(" AND ");
             }
         }
         selection = stringBuffer.toString();

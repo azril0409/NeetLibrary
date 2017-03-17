@@ -2,10 +2,10 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
-        minSdkVersion 7
+        minSdkVersion 9
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -21,10 +21,10 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:appcompat-v7:23.+'
 }
 
-def libname = 'NeetAnnotation_100.jar'
+def libname = 'NeetAnnotation_103.jar'
 task clearAar(type: Delete) {
     delete '../librarys/NeetAnnotation/'
 }

@@ -109,6 +109,7 @@ class Object2StringHelper {
                 }
             } catch (IllegalAccessException e) {
             }
+            field.setAccessible(false);
         }
         //============================
         final StringBuffer elementValue = new StringBuffer();
@@ -163,6 +164,7 @@ class Object2StringHelper {
                 }
             } catch (IllegalAccessException e) {
             }
+            elementField.setAccessible(false);
         }
         if (object instanceof ElementMap) {
             final ElementMap map = (ElementMap) object;
@@ -172,6 +174,9 @@ class Object2StringHelper {
                     elementValue.append(toXML(item, key));
                 }
             }
+        }
+        if(elementValue.length()==0){
+            elementValue.append(object);
         }
         stringBuffer.append(getTagEndString(elementName, elementValue.toString()));
         return stringBuffer.toString();

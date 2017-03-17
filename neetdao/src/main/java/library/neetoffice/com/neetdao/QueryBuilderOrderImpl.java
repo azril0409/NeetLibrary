@@ -5,8 +5,8 @@ package library.neetoffice.com.neetdao;
  */
 class QueryBuilderOrderImpl<E> extends QueryBuilderResultImpl<E> implements QueryBuilderOrder<E> {
 
-    protected QueryBuilderOrderImpl(SQLiteHelper help, Class modelClass) {
-        super(help, modelClass);
+    protected QueryBuilderOrderImpl(DatabaseManager manager, Class modelClass) {
+        super(manager, modelClass);
     }
 
     @Override
@@ -14,7 +14,7 @@ class QueryBuilderOrderImpl<E> extends QueryBuilderResultImpl<E> implements Quer
         if (fieldName == null) {
             return this;
         }
-        orderBy = String.format("ORDER BY %s ASC", fieldName);
+        orderBy = String.format("%s ASC", fieldName);
         return this;
     }
 
@@ -23,7 +23,7 @@ class QueryBuilderOrderImpl<E> extends QueryBuilderResultImpl<E> implements Quer
         if (fieldName == null) {
             return this;
         }
-        orderBy = String.format("ORDER BY %s DESC", fieldName);
+        orderBy = String.format("%s DESC", fieldName);
         return this;
     }
 }

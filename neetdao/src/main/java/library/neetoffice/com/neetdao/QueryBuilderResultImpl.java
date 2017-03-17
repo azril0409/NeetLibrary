@@ -12,8 +12,8 @@ import java.util.List;
 /**
  * Created by Mac on 2016/03/12.
  */
-public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
-    private final SQLiteHelper help;
+class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
+    private final DatabaseManager manager;
     private final Class modelClass;
     private final HashMap<String, Field> map;
     protected String selection;
@@ -21,8 +21,8 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
     private int maxRows = Integer.MAX_VALUE;
     private int startRow = 0;
 
-    protected QueryBuilderResultImpl(SQLiteHelper help, Class modelClass) {
-        this.help = help;
+    protected QueryBuilderResultImpl(DatabaseManager manager, Class modelClass) {
+        this.manager = manager;
         this.modelClass = modelClass;
         map = new HashMap<>();
         final Collection<Field> fields = Util.getFields(modelClass);
@@ -57,60 +57,80 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
 
     @Override
     public int count() {
-        final SQLiteDatabase db = help.getReadableDatabase();
-        final Cursor cursor = query(db);
-        final int count = cursor.getCount();
-        cursor.close();
-        db.close();
+        int count = 0;
+        Cursor cursor = null;
+        try {
+            final SQLiteDatabase db = manager.openDatabase();
+            cursor = query(db);
+            count = cursor.getCount();
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            manager.close();
+        }
         return count;
     }
 
     @Override
     public List<E> list() {
-        final SQLiteDatabase db = help.getReadableDatabase();
         final ArrayList<E> list = new ArrayList<>();
-        final Cursor cursor = query(db);
-        final int count = cursor.getCount();
-        final HashMap<String, Integer> columnIndexMap = getColumnIndexMap(cursor);
-        if (count > 0 && cursor.moveToFirst()) {
-            do {
-                try {
-                    list.add(getObject(columnIndexMap, cursor));
-                } catch (InstantiationException e) {
-                } catch (IllegalAccessException e) {
-                }
-            } while (cursor.moveToNext());
+        Cursor cursor = null;
+        try {
+            final SQLiteDatabase db = manager.openDatabase();
+            cursor = query(db);
+            final int count = cursor.getCount();
+            final HashMap<String, Integer> columnIndexMap = getColumnIndexMap(cursor);
+            if (count > 0 && cursor.moveToFirst()) {
+                do {
+                    try {
+                        list.add(getObject(columnIndexMap, cursor));
+                    } catch (InstantiationException e) {
+                    } catch (IllegalAccessException e) {
+                    }
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            manager.close();
         }
-        cursor.close();
-        db.close();
         return list;
     }
 
     @Override
     public E one() {
-        final SQLiteDatabase db = help.getReadableDatabase();
-        final Cursor cursor = query(db);
-        final int count = cursor.getCount();
-        final HashMap<String, Integer> columnIndexMap = getColumnIndexMap(cursor);
         E item = null;
-        if (count > 0 && cursor.moveToFirst()) {
-            try {
+        Cursor cursor = null;
+        try {
+            final SQLiteDatabase db = manager.openDatabase();
+            cursor = query(db);
+            final int count = cursor.getCount();
+            final HashMap<String, Integer> columnIndexMap = getColumnIndexMap(cursor);
+            if (count > 0 && cursor.moveToFirst()) {
                 item = getObject(columnIndexMap, cursor);
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } finally {
+            }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
                 cursor.close();
             }
+            manager.close();
         }
-        db.close();
         return item;
     }
 
     @Override
     public int delete() {
-        final SQLiteDatabase db = help.getWritableDatabase();
+        final SQLiteDatabase db = manager.openDatabase();
         final int count = db.delete(Util.getTable(modelClass), selection, null);
-        db.close();
+        manager.close();
         return count;
     }
 
@@ -134,6 +154,9 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
             field.setAccessible(true);
             try {
                 final int index = columnIndexMap.get(columnName);
+                if (cursor.isNull(index)) {
+                    continue;
+                }
                 if (field.getType() == Boolean.class) {
                     field.set(object, cursor.getInt(index) > 0);
                 } else if (field.getType() == boolean.class) {
@@ -167,6 +190,7 @@ public class QueryBuilderResultImpl<E> implements QueryBuilderResult<E> {
                 }
             } catch (IllegalArgumentException e) {
             }
+            field.setAccessible(false);
         }
         return (E) object;
     }

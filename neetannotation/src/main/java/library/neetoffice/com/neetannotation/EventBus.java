@@ -1,14 +1,11 @@
 package library.neetoffice.com.neetannotation;
 
 import android.os.Handler;
-import android.os.Looper;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Created by Deo on 2016/4/1.
@@ -31,7 +28,7 @@ public abstract class EventBus {
                 if (d != null) {
                     final Class<?>[] e = b.getParameterTypes();
                     if (e.length != 1) {
-                        throw new BindExcetion(b.getName() + " neet one parameter");
+                        throw new AnnotationException(b.getName() + " neet one parameter");
                     }
                     final Enforce enforce = d.value();
                     if (hashMap.containsKey(e[0])) {
@@ -90,9 +87,11 @@ public abstract class EventBus {
         @Override
         public void run() {
             try {
-                method.invoke(object, event);
+                AnnotationUtil.invoke(method,object, event);
             } catch (IllegalAccessException e) {
+                e.printStackTrace();
             } catch (InvocationTargetException e) {
+                e.printStackTrace();
             }
         }
     }

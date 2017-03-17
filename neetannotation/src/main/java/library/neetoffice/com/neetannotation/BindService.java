@@ -4,9 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -25,13 +23,13 @@ public class BindService {
                 for (Field h : g) {
                     BindField.bindBean(a, h, a);
                     BindField.bindRootContext(a, h, a);
-                    BindField.bindResString(a, h, a.getResources());
-                    BindField.bindResStringArray(a, h, a.getResources());
-                    BindField.bindResBoolean(a, h, a.getResources());
-                    BindField.bindResDimen(a, h, a.getResources());
-                    BindField.bindResInteger(a, h, a.getResources());
-                    BindField.bindResColor(a, h, a.getResources(), a.getTheme());
-                    BindField.bindResDrawable(a, h, a.getResources(), a.getTheme());
+                    BindField.bindResString(a, h, a);
+                    BindField.bindResStringArray(a, h, a);
+                    BindField.bindResBoolean(a, h, a);
+                    BindField.bindResDimen(a, h, a);
+                    BindField.bindResInteger(a, h, a);
+                    BindField.bindResColor(a, h, a, a.getTheme());
+                    BindField.bindResDrawable(a, h, a, a.getTheme());
                 }
                 if (b != null) {
                     final Method[] i = d.getDeclaredMethods();
@@ -70,13 +68,15 @@ public class BindService {
             } else if (g != null) {
                 t[i] = c.getExtras().get(g.value());
             } else {
-                throw new BindExcetion(j.getName() + " neet  contex or Intent or Bundle or @Extra parameter");
+                throw new AnnotationException(j.getName() + " neet  contex or Intent or Bundle or @Extra parameter");
             }
         }
         try {
-            j.invoke(a, t);
+            AnnotationUtil.invoke(j, a, t);
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
         } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
     }
 }

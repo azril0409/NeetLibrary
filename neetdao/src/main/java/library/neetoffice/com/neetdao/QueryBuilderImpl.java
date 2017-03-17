@@ -8,10 +8,10 @@ import java.util.Iterator;
 /**
  * Created by Mac on 2016/03/12.
  */
-public class QueryBuilderImpl<E> extends QueryBuilderOrderImpl<E> implements QueryBuilder<E> {
+ class QueryBuilderImpl<E> extends QueryBuilderOrderImpl<E> implements QueryBuilder<E> {
 
-    QueryBuilderImpl(SQLiteHelper help, Class modelClass) {
-        super(help, modelClass);
+    QueryBuilderImpl(DatabaseManager manager, Class modelClass) {
+        super(manager, modelClass);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class QueryBuilderImpl<E> extends QueryBuilderOrderImpl<E> implements Que
             final Where where = iterator.next();
             stringBuffer.append(where.selection);
             if (iterator.hasNext()) {
-                stringBuffer.append(",");
+                stringBuffer.append(" AND ");
             }
         }
         selection = stringBuffer.toString();
