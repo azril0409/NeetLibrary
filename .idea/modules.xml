@@ -4,15 +4,11 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NeetLibrary.iml" filepath="$PROJECT_DIR$/NeetLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/androidcamerautil/androidcamerautil.iml" filepath="$PROJECT_DIR$/androidcamerautil/androidcamerautil.iml" />
-      <module fileurl="file://$PROJECT_DIR$/codeutil/codeutil.iml" filepath="$PROJECT_DIR$/codeutil/codeutil.iml" />
-      <module fileurl="file://$PROJECT_DIR$/codeutilsample/codeutilsample.iml" filepath="$PROJECT_DIR$/codeutilsample/codeutilsample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/genericadapter/genericadapter.iml" filepath="$PROJECT_DIR$/genericadapter/genericadapter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/genericadaptersample/genericadaptersample.iml" filepath="$PROJECT_DIR$/genericadaptersample/genericadaptersample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/genericrecycleradapter/genericrecycleradapter.iml" filepath="$PROJECT_DIR$/genericrecycleradapter/genericrecycleradapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/neetannotation/neetannotation.iml" filepath="$PROJECT_DIR$/neetannotation/neetannotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/neetdao/neetdao.iml" filepath="$PROJECT_DIR$/neetdao/neetdao.iml" />
       <module fileurl="file://$PROJECT_DIR$/neetdao-sqlcipher/neetdao-sqlcipher.iml" filepath="$PROJECT_DIR$/neetdao-sqlcipher/neetdao-sqlcipher.iml" />
       <module fileurl="file://$PROJECT_DIR$/neetdaosample/neetdaosample.iml" filepath="$PROJECT_DIR$/neetdaosample/neetdaosample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/neetrestapi/neetrestapi.iml" filepath="$PROJECT_DIR$/neetrestapi/neetrestapi.iml" />
       <module fileurl="file://$PROJECT_DIR$/xmlparser/xmlparser.iml" filepath="$PROJECT_DIR$/xmlparser/xmlparser.iml" />
     </modules>
   </component>

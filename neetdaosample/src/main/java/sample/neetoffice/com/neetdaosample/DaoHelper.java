@@ -13,7 +13,7 @@ public class DaoHelper extends DatabaseHelper {
     private static final int VERSION = 1;
 
     public DaoHelper(Context context) {
-        super(context, NAME,"123test", VERSION, Model.class);
+        super(context, NAME, VERSION, Model.class);
     }
 
     public Dao<Model> getModelDao() {

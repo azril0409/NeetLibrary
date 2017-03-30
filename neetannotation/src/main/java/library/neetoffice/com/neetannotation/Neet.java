@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,6 +28,14 @@ public class Neet {
 
     public static void onActivityResult(@NonNull Activity activity, int requestCode, int resultCode, Intent data) {
         BindMethod.onActivityResult(activity, requestCode, resultCode, data);
+    }
+
+    public static boolean onCreateOptionsMenu(@NonNull Activity a, Menu b) {
+        return BindActivity.onCreateOptionsMenu(a, b);
+    }
+
+    public static boolean onOptionsItemSelected(@NonNull Activity a, MenuItem b) {
+        return BindActivity.onOptionsItemSelected(a, b);
     }
 
     @TargetApi(Build.VERSION_CODES.M)

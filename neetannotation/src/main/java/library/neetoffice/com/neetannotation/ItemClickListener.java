@@ -62,7 +62,7 @@ class ItemClickListener implements AdapterView.OnItemClickListener {
                 } catch (IllegalAccessException e) {
                 } catch (InvocationTargetException e) {
                 }
-            } else if (o != null && o.getClass().isInstance(f)) {
+            } else if (o != null && f.isAssignableFrom(o.getClass())) {
                 try {
                     AnnotationUtil.invoke(b, a, parent, o);
                 } catch (IllegalAccessException e) {
@@ -76,7 +76,7 @@ class ItemClickListener implements AdapterView.OnItemClickListener {
                 } catch (IllegalAccessException e) {
                 } catch (InvocationTargetException e) {
                 }
-            } else if (o != null && o.getClass().isInstance(f)) {
+            } else if (o != null && f.isAssignableFrom(o.getClass())) {
                 try {
                     AnnotationUtil.invoke(b, a, o, parent);
                 } catch (IllegalAccessException e) {

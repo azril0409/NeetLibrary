@@ -10,22 +10,20 @@ android {
         versionCode 1
         versionName "1.0"
     }
-    lintOptions{
-        abortOnError false;
-    }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.+'
+    /** http://projects.spring.io/spring-android/ */
+    compile 'org.springframework.android:spring-android-rest-template:2.0.0.M3'
 }
 
-def libname = 'NeetAnnotation_104.jar'
+def libname = 'NeetRestApi_104.jar'
 task clearAar(type: Delete) {
-    delete '../librarys/NeetAnnotation/'
+    delete '../librarys/NeetRestApi/'
 }
 task makeAar(type: Copy) {
     from('build/intermediates/bundles/release/')
-    into('../librarys/NeetAnnotation')
+    into('../librarys/NeetRestApi')
     include('classes.jar')
     include('jni/**')
     rename('classes.jar', libname)

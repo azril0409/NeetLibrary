@@ -3,6 +3,8 @@ package library.neetoffice.com.neetannotation;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.lang.reflect.Field;
@@ -41,6 +43,7 @@ abstract class BindActivity {
                     if (b != null) {
                         bindSaveInstance(a, b, g);
                     }
+                    BindMenu.bindMenu(a);
                 }
                 final Method[] h = c.getDeclaredMethods();
                 final TouchListener l = new TouchListener(a);
@@ -146,5 +149,13 @@ abstract class BindActivity {
             }
             c = c.getSuperclass();
         } while (c != null);
+    }
+
+    static boolean onCreateOptionsMenu(Activity a, Menu b) {
+        return BindMenu.onCreateOptionsMenu(a, b);
+    }
+
+    static boolean onOptionsItemSelected(Activity a, MenuItem b) {
+        return BindMenu.onOptionsItemSelected(a, b);
     }
 }

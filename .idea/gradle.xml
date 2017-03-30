@@ -3,35 +3,22 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="1.8" />
+        <option name="gradleHome" value="C:\Developer\Android\Android Studio\gradle\gradle-2.14.1" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/androidcamerautil" />
-            <option value="$PROJECT_DIR$/codeutil" />
-            <option value="$PROJECT_DIR$/codeutilsample" />
             <option value="$PROJECT_DIR$/neetannotation" />
             <option value="$PROJECT_DIR$/neetdao" />
             <option value="$PROJECT_DIR$/neetdao-sqlcipher" />
             <option value="$PROJECT_DIR$/neetdaosample" />
+            <option value="$PROJECT_DIR$/neetrestapi" />
             <option value="$PROJECT_DIR$/xmlparser" />
           </set>
         </option>
-        <option name="myModules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/androidcamerautil" />
-            <option value="$PROJECT_DIR$/codeutil" />
-            <option value="$PROJECT_DIR$/codeutilsample" />
-            <option value="$PROJECT_DIR$/neetannotation" />
-            <option value="$PROJECT_DIR$/neetdao" />
-            <option value="$PROJECT_DIR$/neetdao-sqlcipher" />
-            <option value="$PROJECT_DIR$/neetdaosample" />
-            <option value="$PROJECT_DIR$/xmlparser" />
-          </set>
-        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

@@ -31,6 +31,7 @@ abstract class BindField {
         } catch (NoSuchMethodException e) {
             try {
                 final Constructor g = f.getDeclaredConstructor(new Class[0]);
+                g.setAccessible(true);
                 h = g.newInstance();
             } catch (NoSuchMethodException e1) {
                 throw new AnnotationException(b.getType() + " neet  no-arg or Context parameter");
@@ -66,7 +67,7 @@ abstract class BindField {
             return;
         }
         final Class<?> f = b.getType();
-        if (f.isInstance(Context.class)) {
+        if (Context.class.isAssignableFrom(f)) {
             try {
                 AnnotationUtil.set(b, a, c);
             } catch (IllegalAccessException e) {

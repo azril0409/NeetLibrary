@@ -4,6 +4,7 @@
     package="sample.neetoffice.com.neetdaosample">
 
     <uses-sdk tools:overrideLibrary="library.neetoffice.com.neetdao" />
+    <uses-sdk tools:overrideLibrary="library.neetoffice.com.restapi" />
 
     <application
         android:allowBackup="true"
