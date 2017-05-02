@@ -8,8 +8,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by Deo on 2016/3/18.
@@ -22,6 +25,7 @@ abstract class BindActivity {
         if (d != null && d.value() != -1) {
             a.setContentView(d.value());
         }
+        final ArrayList<Method> j = new ArrayList<>();
         do {
             final NActivity q = c.getAnnotation(NActivity.class);
             if (q != null) {
@@ -30,6 +34,7 @@ abstract class BindActivity {
                     bindViewById(a, g);
                     BindField.bindBean(a, g, a);
                     BindField.bindRootContext(a, g, a);
+                    BindField.bindApp(a, g, a);
                     BindField.bindResString(a, g, a);
                     BindField.bindResStringArray(a, g, a);
                     BindField.bindResBoolean(a, g, a);
@@ -55,13 +60,27 @@ abstract class BindActivity {
                     BindMethod.bindTouchMove(a, i, l);
                     BindMethod.bindTouchUp(a, i, l);
                     BindMethod.bindItemClick(a, i);
+                    BindMethod.bindLongClick(a, i);
                     BindMethod.bindCheckedChange(a, i);
                     BindMethod.bindFocusChange(a, i);
                     BindMethod.bindTextChange(a, i);
+                    if (BindMethod.isAfterAnnotationMethod(i)) {
+                        j.add(i);
+                    }
                 }
             }
             c = c.getSuperclass();
         } while (c != null);
+        for (int i = j.size() - 1; i >= 0; i--) {
+            try {
+                final Method k = j.get(i);
+                AnnotationUtil.invoke(k, a);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void bindViewById(Activity a, Field b) {
@@ -152,7 +171,9 @@ abstract class BindActivity {
     }
 
     static boolean onCreateOptionsMenu(Activity a, Menu b) {
-        return BindMenu.onCreateOptionsMenu(a, b);
+        final boolean c = BindMenu.onCreateOptionsMenu(a, b);
+        final boolean d = BindMenu.onCreateToolBarMenu(a, b);
+        return c | d;
     }
 
     static boolean onOptionsItemSelected(Activity a, MenuItem b) {

@@ -23,6 +23,7 @@ abstract class BindBroadcastReceiver {
                 for (Field h : g) {
                     BindField.bindBean(a, h, b);
                     BindField.bindRootContext(a, h, b);
+                    BindField.bindApp(a, h, b);
                     BindField.bindResString(a, h, b);
                     BindField.bindResStringArray(a, h, b);
                     BindField.bindResBoolean(a, h, b);

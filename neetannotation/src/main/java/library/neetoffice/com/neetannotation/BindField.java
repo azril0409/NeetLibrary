@@ -11,11 +11,45 @@ import android.view.animation.LayoutAnimationController;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 
 /**
  * Created by Deo on 2016/3/18.
  */
 abstract class BindField {
+    private static final HashMap<String, Object> MAP = new HashMap<>();
+
+    static Object newInstance(Class<?> a, Context c) {
+        try {
+            final Constructor g = a.getDeclaredConstructor(new Class[]{Context.class});
+            g.setAccessible(true);
+            return g.newInstance(c);
+        } catch (NoSuchMethodException e) {
+            try {
+                return a.newInstance();
+            } catch (InstantiationException e1) {
+                throw new AnnotationException(a.getSimpleName() + " neet  no-arg or Context parameter");
+            } catch (IllegalAccessException e1) {
+                throw new AnnotationException(a.getSimpleName() + " neet  no-arg or Context parameter");
+            }
+        } catch (IllegalAccessException e) {
+            throw new AnnotationException(a.getSimpleName() + " neet  no-arg or Context parameter");
+        } catch (InstantiationException e) {
+            throw new AnnotationException(a.getSimpleName() + " neet  no-arg or Context parameter");
+        } catch (InvocationTargetException e) {
+            throw new AnnotationException(a.getSimpleName() + " neet  no-arg or Context parameter");
+        }
+    }
+
+    static Object newStaticInstance(Class<?> a, Context c) {
+        if (MAP.containsKey(a.getName())) {
+            return MAP.get(a.getName());
+        } else {
+            final Object b = newInstance(a, c);
+            MAP.put(a.getName(), b);
+            return b;
+        }
+    }
 
     static void bindBean(Object a, Field b, Context c) {
         final Bean d = b.getAnnotation(Bean.class);
@@ -24,30 +58,11 @@ abstract class BindField {
         }
         final Class<?> f = b.getType();
         Object h;
-        try {
-            final Constructor g = f.getDeclaredConstructor(new Class[]{Context.class});
-            g.setAccessible(true);
-            h = g.newInstance(c);
-        } catch (NoSuchMethodException e) {
-            try {
-                final Constructor g = f.getDeclaredConstructor(new Class[0]);
-                g.setAccessible(true);
-                h = g.newInstance();
-            } catch (NoSuchMethodException e1) {
-                throw new AnnotationException(b.getType() + " neet  no-arg or Context parameter");
-            } catch (InvocationTargetException e1) {
-                throw new AnnotationException(b.getType() + " neet  no-arg or Context parameter");
-            } catch (InstantiationException e1) {
-                throw new AnnotationException(b.getType() + " neet  no-arg or Context parameter");
-            } catch (IllegalAccessException e1) {
-                throw new AnnotationException(b.getType() + " neet  no-arg or Context parameter");
-            }
-        } catch (InvocationTargetException e) {
-            throw new AnnotationException(b.getType() + " neet  no-arg or Context parameter");
-        } catch (InstantiationException e) {
-            throw new AnnotationException(b.getType() + " neet  no-arg or Context parameter");
-        } catch (IllegalAccessException e) {
-            throw new AnnotationException(b.getType() + " neet  no-arg or Context parameter");
+        final NBean k = f.getAnnotation(NBean.class);
+        if (k != null && k.value() == Scope.Singleton) {
+            h = newStaticInstance(f, c);
+        } else {
+            h = newInstance(f, c);
         }
         try {
             AnnotationUtil.set(b, a, h);
@@ -75,6 +90,24 @@ abstract class BindField {
             }
         } else {
             throw new AnnotationException(b.getType() + " type is not Context");
+        }
+    }
+
+    static void bindApp(Object a, Field b, Context c) {
+        final App d = b.getAnnotation(App.class);
+        if (d == null) {
+            return;
+        }
+        final Context p = c.getApplicationContext();
+        final Class<?> f = b.getType();
+        if (p.getClass().isAssignableFrom(f)) {
+            try {
+                AnnotationUtil.set(b, a, p);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new AnnotationException(b.getType() + " type is not Application");
         }
     }
 

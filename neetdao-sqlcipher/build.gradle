@@ -35,8 +35,10 @@ task makeAar(type: Copy) {
     from('build/intermediates/bundles/release/')
     into('../librarys/NeetDAO-sqlcipher')
     include('classes.jar')
-    include('jni/**')
     rename('classes.jar', libname)
+    from('../neetdao-sqlcipher/')
+    include('jni/**')
+    include('assets/**')
 }
 
 makeAar.dependsOn(clearAar, build)

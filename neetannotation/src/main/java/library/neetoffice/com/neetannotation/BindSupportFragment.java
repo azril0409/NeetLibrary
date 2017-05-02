@@ -7,12 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by Deo on 2016/3/18.
  */
-public class BindFragmentv4 {
+public class BindSupportFragment {
 
     static void onCreate(Fragment a, Bundle b) {
         Class<?> c = a.getClass();
@@ -47,20 +50,22 @@ public class BindFragmentv4 {
     static View onCreateView(Fragment a, ViewGroup b, Bundle w) {
         Class<?> c = a.getClass();
         final NFragment d = c.getAnnotation(NFragment.class);
-        final View e;
+        final View v;
         if (d != null && d.value() != -1) {
-            e = LayoutInflater.from(a.getContext()).inflate(d.value(), b, false);
+            v = LayoutInflater.from(a.getContext()).inflate(d.value(), b, false);
         } else {
-            e = new View(a.getContext());
+            v = new View(a.getContext());
         }
+        final ArrayList<Method> j = new ArrayList<>();
         do {
             final NFragment q = c.getAnnotation(NFragment.class);
             if (q != null) {
                 final Field[] f = c.getDeclaredFields();
                 for (Field g : f) {
-                    bindViewById(a, e, g);
+                    bindViewById(a, v, g);
                     BindField.bindBean(a, g, a.getContext());
                     BindField.bindRootContext(a, g, a.getContext());
+                    BindField.bindApp(a, g, a.getContext());
                     BindField.bindResString(a, g, a.getContext());
                     BindField.bindResStringArray(a, g, a.getContext());
                     BindField.bindResBoolean(a, g, a.getContext());
@@ -76,21 +81,35 @@ public class BindFragmentv4 {
                 final Method[] h = c.getDeclaredMethods();
                 final TouchListener l = new TouchListener(a);
                 for (Method i : h) {
-                    BindMethod.bindClick(a, e, i);
-                    BindMethod.bindLongClick(a, e, i);
-                    BindMethod.bindTouch(a, e, i, l);
-                    BindMethod.bindTouchDown(a, e, i, l);
-                    BindMethod.bindTouchMove(a, e, i, l);
-                    BindMethod.bindTouchUp(a, e, i, l);
-                    BindMethod.bindItemClick(a, e, i);
-                    BindMethod.bindCheckedChange(a, e, i);
-                    BindMethod.bindFocusChange(a, e, i);
-                    BindMethod.bindTextChange(a, e, i);
+                    BindMethod.bindClick(a, v, i);
+                    BindMethod.bindLongClick(a, v, i);
+                    BindMethod.bindTouch(a, v, i, l);
+                    BindMethod.bindTouchDown(a, v, i, l);
+                    BindMethod.bindTouchMove(a, v, i, l);
+                    BindMethod.bindTouchUp(a, v, i, l);
+                    BindMethod.bindItemClick(a, v, i);
+                    BindMethod.bindLongClick(a, v, i);
+                    BindMethod.bindCheckedChange(a, v, i);
+                    BindMethod.bindFocusChange(a, v, i);
+                    BindMethod.bindTextChange(a, v, i);
+                    if (BindMethod.isAfterAnnotationMethod(i)) {
+                        j.add(i);
+                    }
                 }
             }
             c = c.getSuperclass();
         } while (c != null);
-        return e;
+        for (int i = j.size() - 1; i >= 0; i--) {
+            try {
+                final Method k = j.get(i);
+                AnnotationUtil.invoke(k, a);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return v;
     }
 
     static void bindViewById(Fragment a, View b, Field c) {

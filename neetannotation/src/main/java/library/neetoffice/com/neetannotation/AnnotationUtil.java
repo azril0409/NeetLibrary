@@ -11,6 +11,9 @@ import java.lang.reflect.Method;
 public abstract class AnnotationUtil {
     public static void set(Field a, Object object, Object value) throws IllegalAccessException {
         try {
+            if (value == null) {
+                return;
+            }
             a.setAccessible(true);
             a.set(object, value);
         } catch (IllegalAccessException e) {

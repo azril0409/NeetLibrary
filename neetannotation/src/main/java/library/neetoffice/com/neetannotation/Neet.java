@@ -39,6 +39,11 @@ public class Neet {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
+    public static void onCreate(@NonNull android.app.Fragment fragment, Bundle savedInstanceState) {
+        BindFragment.onCreate(fragment, savedInstanceState);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
     public static View onCreateView(@NonNull android.app.Fragment fragment, ViewGroup container, Bundle savedInstanceState) {
         return BindFragment.onCreateView(fragment, container, savedInstanceState);
     }
@@ -53,12 +58,16 @@ public class Neet {
         BindMethod.onActivityResult(fragment, requestCode, resultCode, data);
     }
 
+    public static void onCreate(@NonNull android.support.v4.app.Fragment fragment, Bundle savedInstanceState) {
+        BindSupportFragment.onCreate(fragment, savedInstanceState);
+    }
+
     public static View onCreateView(@NonNull android.support.v4.app.Fragment fragment, ViewGroup container, Bundle savedInstanceState) {
-        return BindFragmentv4.onCreateView(fragment, container, savedInstanceState);
+        return BindSupportFragment.onCreateView(fragment, container, savedInstanceState);
     }
 
     public static void onSaveInstanceState(@NonNull android.support.v4.app.Fragment fragment, Bundle outState) {
-        BindFragmentv4.onSaveInstanceState(fragment, outState);
+        BindSupportFragment.onSaveInstanceState(fragment, outState);
     }
 
     public static void onActivityResult(@NonNull android.support.v4.app.Fragment fragment, int requestCode, int resultCode, Intent data) {

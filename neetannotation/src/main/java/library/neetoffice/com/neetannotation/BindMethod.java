@@ -221,6 +221,23 @@ abstract class BindMethod {
         }
     }
 
+    static void bindItemLongClick(Activity a, Method c) {
+        final ItemClick d = c.getAnnotation(ItemClick.class);
+        if (d == null) {
+            return;
+        }
+        final int[] f = d.value();
+        for (int g : f) {
+            final View h = a.findViewById(g);
+            if (h == null) {
+                continue;
+            }
+            if (h instanceof AdapterView) {
+                ((AdapterView) h).setOnItemLongClickListener(new ItemLongClickListener(a, c));
+            }
+        }
+    }
+
     static void bindItemClick(Object a, View b, Method c) {
         final ItemClick d = c.getAnnotation(ItemClick.class);
         if (d == null) {
@@ -234,6 +251,23 @@ abstract class BindMethod {
             }
             if (h instanceof AdapterView) {
                 ((AdapterView) h).setOnItemClickListener(new ItemClickListener(a, c));
+            }
+        }
+    }
+
+    static void bindItemLongClick(Object a, View b, Method c) {
+        final ItemClick d = c.getAnnotation(ItemClick.class);
+        if (d == null) {
+            return;
+        }
+        final int[] f = d.value();
+        for (int g : f) {
+            final View h = b.findViewById(g);
+            if (h == null) {
+                continue;
+            }
+            if (h instanceof AdapterView) {
+                ((AdapterView) h).setOnItemLongClickListener(new ItemLongClickListener(a, c));
             }
         }
     }
@@ -397,5 +431,19 @@ abstract class BindMethod {
             }
             d = d.getSuperclass();
         } while (d != null);
+    }
+
+    static boolean isAfterAnnotationMethod(Method a) {
+        final AfterAnnotation b = a.getAnnotation(AfterAnnotation.class);
+        if (b == null) {
+            return false;
+        }
+        final Class<?>[] c = a.getParameterTypes();
+        if (c.length != 0) {
+            final Exception exception = new AnnotationException(a.getName() + " neet  () ");
+            exception.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

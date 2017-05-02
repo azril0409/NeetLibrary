@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 /**
  * Created by Deo-chainmeans on 2017/3/21.
  */
-
 public class RestApiManager {
     public static final RestApiManager getInstance(Context context) {
         return new RestApiManager(context);

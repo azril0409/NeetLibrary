@@ -17,26 +17,34 @@ import java.lang.reflect.Method;
  */
 
 abstract class BindMenu {
-    static void bindMenu(Activity a) {
-        final OptionsMenu b = a.getClass().getAnnotation(OptionsMenu.class);
+    static void bindMenu(final Activity a) {
+        final NToolBar b = a.getClass().getAnnotation(NToolBar.class);
         if (b == null) {
             return;
         }
         View c = null;
-        if (b.toolbarId() != -1) {
-            c = a.findViewById(b.toolbarId());
+        if (b.resId() != -1) {
+            c = a.findViewById(b.resId());
         }
         if (a instanceof AppCompatActivity && c != null && c instanceof android.support.v7.widget.Toolbar) {
             ((AppCompatActivity) a).setSupportActionBar((android.support.v7.widget.Toolbar) c);
-        } else if (a instanceof AppCompatActivity && c != null && c instanceof Toolbar) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ((AppCompatActivity) a).setActionBar((Toolbar) c);
-            }
         } else if (c != null && c instanceof Toolbar) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 a.setActionBar((Toolbar) c);
             }
         }
+    }
+
+    static boolean onCreateToolBarMenu(Activity a, Menu b) {
+        final NToolBar c = a.getClass().getAnnotation(NToolBar.class);
+        if (c == null) {
+            return true;
+        }
+        int d = c.value();
+        if (d > 0) {
+            a.getMenuInflater().inflate(d, b);
+        }
+        return true;
     }
 
     static boolean onCreateOptionsMenu(Activity a, Menu b) {
