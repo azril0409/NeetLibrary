@@ -23,6 +23,17 @@ public abstract class AnnotationUtil {
         }
     }
 
+    public static Object get(Field a, Object object) throws IllegalAccessException {
+        try {
+            a.setAccessible(true);
+            return a.get(object);
+        } catch (IllegalAccessException e) {
+            throw e;
+        } finally {
+            a.setAccessible(false);
+        }
+    }
+
     public static Object invoke(Method a, Object object, Object... value) throws InvocationTargetException, IllegalAccessException {
         try {
             a.setAccessible(true);

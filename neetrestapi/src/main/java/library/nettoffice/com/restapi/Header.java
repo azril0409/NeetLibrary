@@ -10,8 +10,9 @@ import java.lang.annotation.Target;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ElementType.METHOD, ElementType.PARAMETER})
 public @interface Header {
-    String name() default "";
+    String name();
+
     String value() default "";
 }

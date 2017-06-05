@@ -12,6 +12,6 @@ public class AnnotationBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Neet.onReceive(this, context, intent);
+        AnnotationHelp.onReceive(this, context, intent);
     }
 }

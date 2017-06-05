@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target(ElementType.PARAMETER)
 public @interface Cookie {
-    String value() default "";
+    String value();
 }

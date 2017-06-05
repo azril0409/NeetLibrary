@@ -1,6 +1,7 @@
 package library.neetoffice.com.neetannotation;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.animation.LayoutAnimationController;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.util.HashMap;
 
 /**
@@ -73,6 +75,7 @@ abstract class BindField {
         for (Field j : i) {
             bindBean(h, j, c);
             bindRootContext(h, j, c);
+            BindRestService.bind(h, j);
         }
     }
 
@@ -295,6 +298,31 @@ abstract class BindField {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void bindSharedPreferences(Object a, Field b, Context c) {
+        final Pref d = b.getAnnotation(Pref.class);
+        if (d == null) {
+            return;
+        }
+        final Class<?> f = b.getType();
+        final SharedPref g = f.getAnnotation(SharedPref.class);
+        if (g == null) {
+            return;
+        }
+        final String name;
+        if (g.value() == Scope.Singleton) {
+            name = c.getApplicationContext().getClass().getSimpleName() + "_Pref";
+        } else {
+            name = a.getClass().getSimpleName() + "_Pref";
+        }
+        final SharedPreferences h = c.getSharedPreferences(name, Context.MODE_PRIVATE);
+        final Object i = Proxy.newProxyInstance(f.getClassLoader(), new Class<?>[]{f}, new SharedPrefInvocationHandler(c, h));
+        try {
+            AnnotationUtil.set(b, a, i);
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }

@@ -6,10 +6,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by Deo on 2016/3/18.
+ * Created by Deo-chainmeans on 2017/5/20.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Argument {
-    String value() ;
+@Target(ElementType.METHOD)
+public @interface DefaultBoolean {
+    /**
+     * The default value of the preference.
+     *
+     * @return the default value
+     */
+    boolean value();
 }

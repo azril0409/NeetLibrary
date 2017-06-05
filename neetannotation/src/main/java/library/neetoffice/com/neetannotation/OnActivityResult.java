@@ -17,4 +17,10 @@ public @interface OnActivityResult {
     int value();
 
     int resultCode() default Activity.RESULT_OK;
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.PARAMETER})
+    public @interface Extra {
+        String value();
+    }
 }

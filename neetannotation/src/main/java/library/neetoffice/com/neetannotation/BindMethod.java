@@ -391,32 +391,14 @@ abstract class BindMethod {
                         final Annotation[][] j = g.getParameterAnnotations();
                         for (int k = 0; k < i.length; k++) {
                             Annotation[] m = j[k];
-                            Extra n = null;
-                            for (Annotation p : m) {
-                                if (p.annotationType() == Extra.class) {
-                                    n = (Extra) p;
-                                    break;
-                                }
-                            }
-                            if (n == null) {
-                                Class<?> s = i[k];
-                                if (s == Intent.class) {
-                                    o[k] = c;
-                                } else if (s == Bundle.class) {
-                                    if (c != null) {
-                                        o[k] = c.getExtras();
-                                    } else {
-                                        o[k] = null;
-                                    }
-                                } else {
-                                    o[k] = null;
-                                }
-                            } else {
-                                if (c != null && c.getExtras() != null) {
-                                    o[k] = c.getExtras().get(n.value());
-                                } else {
-                                    o[k] = null;
-                                }
+                            OnActivityResult.Extra n = findParameterAnnotation(j[k], OnActivityResult.Extra.class);
+                            Class<?> s = i[k];
+                            if (s == Intent.class) {
+                                o[k] = c;
+                            } else if (s == Bundle.class && c != null) {
+                                o[k] = c.getExtras();
+                            } else if (n != null && c != null && c.getExtras() != null) {
+                                o[k] = c.getExtras().get(n.value());
                             }
                         }
                         try {
@@ -431,6 +413,17 @@ abstract class BindMethod {
             }
             d = d.getSuperclass();
         } while (d != null);
+    }
+
+    static <T> T findParameterAnnotation(Annotation[] a, Class<T> cls) {
+        T n = null;
+        for (Annotation p : a) {
+            if (p.annotationType() == cls) {
+                n = (T) p;
+                break;
+            }
+        }
+        return n;
     }
 
     static boolean isAfterAnnotationMethod(Method a) {

@@ -44,11 +44,13 @@ abstract class BindActivity {
                     BindField.bindResDrawable(a, g, a, a.getTheme());
                     BindField.bindResAnimation(a, g, a);
                     BindField.bindResLayoutAnimation(a, g, a);
-                    bindExtra(a, g);
+                    BindField.bindSharedPreferences(a,g,a);
+                    BindExtra.bindExtra(a, g);
                     if (b != null) {
                         bindSaveInstance(a, b, g);
                     }
                     BindMenu.bindMenu(a);
+                    BindRestService.bind(a, g);
                 }
                 final Method[] h = c.getDeclaredMethods();
                 final TouchListener l = new TouchListener(a);
@@ -60,7 +62,7 @@ abstract class BindActivity {
                     BindMethod.bindTouchMove(a, i, l);
                     BindMethod.bindTouchUp(a, i, l);
                     BindMethod.bindItemClick(a, i);
-                    BindMethod.bindLongClick(a, i);
+                    BindMethod.bindItemLongClick(a, i);
                     BindMethod.bindCheckedChange(a, i);
                     BindMethod.bindFocusChange(a, i);
                     BindMethod.bindTextChange(a, i);
@@ -99,28 +101,6 @@ abstract class BindActivity {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static void bindExtra(Activity a, Field b) {
-        final Extra c = b.getAnnotation(Extra.class);
-        if (c == null) {
-            return;
-        }
-        final String d = c.value();
-        final Intent e = a.getIntent();
-        if (e == null) {
-            return;
-        }
-        final Bundle f = e.getExtras();
-        if (f == null) {
-            return;
-        }
-        final Object g = f.get(d);
-        try {
-            AnnotationUtil.set(b, a, g);
-        } catch (IllegalAccessException e1) {
-            e1.printStackTrace();
         }
     }
 

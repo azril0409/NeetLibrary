@@ -38,6 +38,8 @@ abstract class BindView {
                     BindField.bindResDrawable(a, g, a.getContext(), a.getContext().getTheme());
                     BindField.bindResAnimation(a, g, a.getContext());
                     BindField.bindResLayoutAnimation(a, g, a.getContext());
+                    BindField.bindSharedPreferences(a, g, a.getContext());
+                    BindRestService.bind(a, g);
                 }
                 final Method[] h = c.getDeclaredMethods();
                 final TouchListener l = new TouchListener(a);

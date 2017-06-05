@@ -75,8 +75,10 @@ public class BindSupportFragment {
                     BindField.bindResDrawable(a, g, a.getContext(), a.getContext().getTheme());
                     BindField.bindResAnimation(a, g, a.getContext());
                     BindField.bindResLayoutAnimation(a, g, a.getContext());
-                    bindArgument(a, g);
+                    BindField.bindSharedPreferences(a, g, a.getContext());
+                    BindExtra.bindArgument(a, g);
                     BindField.bindSaveInstance(a, g, w);
+                    BindRestService.bind(a, g);
                 }
                 final Method[] h = c.getDeclaredMethods();
                 final TouchListener l = new TouchListener(a);
@@ -88,7 +90,7 @@ public class BindSupportFragment {
                     BindMethod.bindTouchMove(a, v, i, l);
                     BindMethod.bindTouchUp(a, v, i, l);
                     BindMethod.bindItemClick(a, v, i);
-                    BindMethod.bindLongClick(a, v, i);
+                    BindMethod.bindItemLongClick(a,v, i);
                     BindMethod.bindCheckedChange(a, v, i);
                     BindMethod.bindFocusChange(a, v, i);
                     BindMethod.bindTextChange(a, v, i);
@@ -126,21 +128,6 @@ public class BindSupportFragment {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void bindArgument(Fragment a, Field b) {
-        final Argument c = b.getAnnotation(Argument.class);
-        if (c == null) {
-            return;
-        }
-        final Bundle d = a.getArguments();
-        final String f = c.value();
-        final Object g = d.get(f);
-        try {
-            AnnotationUtil.set(b, a, g);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

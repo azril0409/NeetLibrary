@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 /**
  * Created by Deo on 2016/3/8.
  */
-public class Neet {
+public class AnnotationHelp {
 
     public static void onCreate(@NonNull Activity activity, Bundle savedInstanceState) {
         BindActivity.onCreate(activity, savedInstanceState);
@@ -81,13 +81,4 @@ public class Neet {
     public static void onReceive(@NonNull BroadcastReceiver broadcastReceiver, Context context, Intent intent) {
         BindBroadcastReceiver.onReceive(broadcastReceiver, context, intent);
     }
-
-    public static IntentBundle newIntent(Context context) {
-        return new IntentBundle(context);
-    }
-
-    public static ArgumentBundle newArgument() {
-        return new ArgumentBundle();
-    }
-
 }

@@ -19,24 +19,24 @@ public class AnnotationFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Neet.onCreate(this, savedInstanceState);
+        AnnotationHelp.onCreate(this, savedInstanceState);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return Neet.onCreateView(this, container, savedInstanceState);
+        return AnnotationHelp.onCreateView(this, container, savedInstanceState);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Neet.onSaveInstanceState(this, outState);
+        AnnotationHelp.onSaveInstanceState(this, outState);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Neet.onActivityResult(this, requestCode, resultCode, data);
+        AnnotationHelp.onActivityResult(this, requestCode, resultCode, data);
     }
 }

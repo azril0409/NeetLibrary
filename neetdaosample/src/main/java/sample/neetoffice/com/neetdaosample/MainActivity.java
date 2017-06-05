@@ -3,7 +3,6 @@ package sample.neetoffice.com.neetdaosample;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -12,12 +11,9 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.sqlcipher.database.SQLiteDatabase;
-
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -25,11 +21,12 @@ import library.neetoffice.com.neetannotation.Bean;
 import library.neetoffice.com.neetannotation.Click;
 import library.neetoffice.com.neetannotation.ItemClick;
 import library.neetoffice.com.neetannotation.NActivity;
-import library.neetoffice.com.neetannotation.Neet;
+import library.neetoffice.com.neetannotation.AnnotationHelp;
+import library.neetoffice.com.neetannotation.Pref;
+import library.neetoffice.com.neetannotation.RestService;
 import library.neetoffice.com.neetannotation.ViewById;
 import library.neetoffice.com.neetdao.Where;
 import library.nettoffice.com.restapi.ResponseCallBack;
-import library.nettoffice.com.restapi.RestApiManager;
 
 @NActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
@@ -41,15 +38,12 @@ public class MainActivity extends AppCompatActivity {
     DaoHelper daoHelper;
     @Bean
     ModelAdapter modelAdapter;
-    @Bean
-    RestApiManager api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Neet.onCreate(this, savedInstanceState);
+        AnnotationHelp.onCreate(this, savedInstanceState);
         listView.setAdapter(modelAdapter);
-        load();
     }
 
     @Click(R.id.button1)
@@ -83,18 +77,4 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void load() {
-        api.request(new Request(), new ResponseCallBack<Response<ArrayList<Project>>>() {
-            @Override
-            public void onResponse(Response<ArrayList<Project>> response) {
-                Log.d("TEST", "code : " + response.getData().size());
-                final ObjectMapper objectMapper = new ObjectMapper();
-                try {
-                    Toast.makeText(MainActivity.this, objectMapper.writeValueAsString(response), Toast.LENGTH_LONG).show();
-                } catch (JsonProcessingException e) {
-                    Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
 }

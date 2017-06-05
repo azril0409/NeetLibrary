@@ -1,19 +1,17 @@
 package sample.neetoffice.com.neetdaosample;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import library.neetoffice.com.neetannotation.Bean;
 import library.neetoffice.com.neetannotation.Click;
 import library.neetoffice.com.neetannotation.Extra;
 import library.neetoffice.com.neetannotation.NActivity;
-import library.neetoffice.com.neetannotation.Neet;
+import library.neetoffice.com.neetannotation.AnnotationHelp;
 import library.neetoffice.com.neetannotation.SaveInstance;
 import library.neetoffice.com.neetannotation.ViewById;
 
@@ -35,7 +33,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Neet.onCreate(this, savedInstanceState);
+        AnnotationHelp.onCreate(this, savedInstanceState);
         editText1.setText(model.getTitle());
         editText2.setText(model.getMessage());
         Toast.makeText(this,model.getMessage(),Toast.LENGTH_SHORT).show();
@@ -44,7 +42,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Neet.onSaveInstanceState(this, outState);
+        AnnotationHelp.onSaveInstanceState(this, outState);
         Toast.makeText(this,model.getMessage(),Toast.LENGTH_SHORT).show();
     }
 

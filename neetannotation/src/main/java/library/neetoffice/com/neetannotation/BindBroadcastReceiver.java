@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,6 +34,8 @@ abstract class BindBroadcastReceiver {
                     BindField.bindResDrawable(a, h, b, b.getTheme());
                     BindField.bindResAnimation(a, h, b);
                     BindField.bindResLayoutAnimation(a, h, b);
+                    BindField.bindSharedPreferences(a, h, b);
+                    BindRestService.bind(a, h);
                 }
                 if (c != null) {
                     final Method[] i = d.getDeclaredMethods();
@@ -54,21 +57,23 @@ abstract class BindBroadcastReceiver {
         if (!action.equals(b.value())) {
             return;
         }
+        final Annotation[][] v = j.getParameterAnnotations();
         final Class<?>[] d = j.getParameterTypes();
         final Object[] t = new Object[d.length];
         for (int i = 0; i < d.length; i++) {
             final Class<?> f = d[i];
             final Extra g = f.getAnnotation(Extra.class);
             if (f == Context.class) {
-                t[i] = p;
+                t[i] = a;
             } else if (f == Intent.class) {
                 t[i] = c;
-            } else if (f == Bundle.class) {
+            } else if (f == Bundle.class && c.getExtras() != null) {
                 t[i] = c.getExtras();
-            } else if (g != null) {
-                t[i] = c.getExtras().get(g.value());
             } else {
-                throw new AnnotationException(j.getName() + " neet  contex or Intent or Bundle or @Extra parameter");
+                final ReceiverAction.Extra u = BindMethod.findParameterAnnotation(v[i], ReceiverAction.Extra.class);
+                if (u != null) {
+                    t[i] = c.getExtras().get(u.value());
+                }
             }
         }
         try {

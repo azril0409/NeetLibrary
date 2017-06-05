@@ -17,7 +17,7 @@ dependencies {
     compile 'org.springframework.android:spring-android-rest-template:2.0.0.M3'
 }
 
-def libname = 'NeetRestApi_105.jar'
+def libname = 'NeetRestApi_106.jar'
 task clearAar(type: Delete) {
     delete '../librarys/NeetRestApi/'
 }

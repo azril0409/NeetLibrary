@@ -1,7 +1,6 @@
 package sample.neetoffice.com.neetdaosample;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -11,7 +10,7 @@ import java.util.Calendar;
 import library.neetoffice.com.neetannotation.Bean;
 import library.neetoffice.com.neetannotation.Click;
 import library.neetoffice.com.neetannotation.NActivity;
-import library.neetoffice.com.neetannotation.Neet;
+import library.neetoffice.com.neetannotation.AnnotationHelp;
 import library.neetoffice.com.neetannotation.ViewById;
 
 /**
@@ -29,7 +28,7 @@ public class NewActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Neet.onCreate(this, savedInstanceState);
+        AnnotationHelp.onCreate(this, savedInstanceState);
     }
 
     @Click(R.id.button1)

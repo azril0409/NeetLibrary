@@ -12,4 +12,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ReceiverAction {
     String value();
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.PARAMETER})
+    public @interface Extra {
+        String value();
+    }
 }

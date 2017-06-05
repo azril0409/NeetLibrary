@@ -8,10 +8,10 @@ import java.lang.reflect.Type;
  * Created by Deo-chainmeans on 2017/3/22.
  */
 
-public class Reference<Response> extends ParameterizedTypeReference<Response> {
+class Reference extends ParameterizedTypeReference<Object> {
     private final Type type;
 
-    public Reference(Type type) {
+    Reference(Type type) {
         this.type = type;
     }
 

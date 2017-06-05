@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target(ElementType.PARAMETER)
 public @interface Path {
 
     /**
@@ -18,5 +18,5 @@ public @interface Path {
      *
      * @return the url variable name
      */
-    String value() default "";
+    String value();
 }

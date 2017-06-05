@@ -19,7 +19,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.+'
 }
 
-def libname = 'NeetAnnotation_105.jar'
+def libname = 'NeetAnnotation_106.jar'
 task clearAar(type: Delete) {
     delete '../librarys/NeetAnnotation/'
 }
