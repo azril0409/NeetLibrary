@@ -222,7 +222,7 @@ abstract class BindMethod {
     }
 
     static void bindItemLongClick(Activity a, Method c) {
-        final ItemClick d = c.getAnnotation(ItemClick.class);
+        final ItemLongClick d = c.getAnnotation(ItemLongClick.class);
         if (d == null) {
             return;
         }
@@ -256,7 +256,7 @@ abstract class BindMethod {
     }
 
     static void bindItemLongClick(Object a, View b, Method c) {
-        final ItemClick d = c.getAnnotation(ItemClick.class);
+        final ItemLongClick d = c.getAnnotation(ItemLongClick.class);
         if (d == null) {
             return;
         }
