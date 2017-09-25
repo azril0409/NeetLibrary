@@ -10,4 +10,6 @@ public interface RestApiSupport {
     RestTemplate getRestTemplate();
 
     void setRestTemplate(RestTemplate restTemplate);
+
+    void setRootUrl(String rootUrl);
 }

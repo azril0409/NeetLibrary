@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * Created by Deo-chainmeans on 2017/5/20.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.FIELD,ElementType.METHOD})
 public @interface DefaultString {
     /**
      * The default value of the preference.

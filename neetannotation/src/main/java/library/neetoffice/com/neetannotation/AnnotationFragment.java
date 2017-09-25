@@ -15,7 +15,7 @@ import android.view.ViewGroup;
  */
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class AnnotationFragment extends Fragment {
+public abstract class AnnotationFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

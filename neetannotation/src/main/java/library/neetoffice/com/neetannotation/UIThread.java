@@ -6,15 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by Deo-chainmeans on 2017/5/20.
+ * Created by Deo-chainmeans on 2017/9/5.
  */
+
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD,ElementType.METHOD})
-public @interface DefaultFloat {
-    /**
-     * The default value of the preference.
-     *
-     * @return the default value
-     */
-    float value();
+@Target(ElementType.METHOD)
+public @interface UIThread {
+    long delayMillis() default 0;
 }

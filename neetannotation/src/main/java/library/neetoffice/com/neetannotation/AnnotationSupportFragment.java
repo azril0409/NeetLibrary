@@ -12,7 +12,7 @@ import android.view.ViewGroup;
  * Created by Deo-chainmeans on 2017/4/29.
  */
 
-public class AnnotationSupportFragment extends Fragment {
+public abstract class AnnotationSupportFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -39,6 +39,8 @@ abstract class BindView {
                     BindField.bindResAnimation(a, g, a.getContext());
                     BindField.bindResLayoutAnimation(a, g, a.getContext());
                     BindField.bindSharedPreferences(a, g, a.getContext());
+                    BindField.bindHandler(a, g, a.getContext());
+                    BindField.bindSystemService(a, g, a.getContext());
                     BindRestService.bind(a, g);
                 }
                 final Method[] h = c.getDeclaredMethods();

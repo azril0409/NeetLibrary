@@ -2,6 +2,7 @@ package library.neetoffice.com.neetdao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.lang.reflect.Field;
@@ -172,7 +173,7 @@ class DaoImpl<E> extends DatabaseManager implements Dao<E> {
                 f.setAccessible(true);
                 try {
                     final Object value = f.get(entity);
-                    if (f != null&&value != null) {
+                    if (f != null && value != null) {
                         wheres.add(Where.eq(Util.getColumnName(f), value));
                     }
                 } catch (IllegalAccessException e) {
@@ -201,6 +202,7 @@ class DaoImpl<E> extends DatabaseManager implements Dao<E> {
     public E one() {
         return new QueryBuilderImpl<E>(this, modelClass).one();
     }
+
     @Override
     public List<E> list() {
         return new QueryBuilderImpl<E>(this, modelClass).list();
@@ -217,5 +219,29 @@ class DaoImpl<E> extends DatabaseManager implements Dao<E> {
     public void drop() {
         SQLiteHelper.dropTable(openDatabase(), modelClass);
         close();
+    }
+
+    @Override
+    public void beginTransaction() {
+        final SQLiteDatabase db = openDatabase();
+        db.beginTransaction();
+    }
+
+    @Override
+    public void setTransactionSuccessful() {
+        final SQLiteDatabase db = openDatabase();
+        db.setTransactionSuccessful();
+    }
+
+    @Override
+    public void endTransaction() {
+        final SQLiteDatabase db = openDatabase();
+        db.endTransaction();
+    }
+
+    @Override
+    public void execSQL(String sql) throws SQLException {
+        final SQLiteDatabase db = openDatabase();
+        db.execSQL(sql);
     }
 }

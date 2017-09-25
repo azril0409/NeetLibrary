@@ -15,3 +15,24 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+##----------------------------------
+-dontwarn library.neetoffice.com.**
+-keep class library.neetoffice.com.** { *; }
+-keep interface library.neetoffice.com.** { *; }
+-keep @library.neetoffice.com.neetannotation.NotProguard class * {*;}
+-keep @library.neetoffice.com.neetannotation.Handler interface * {*;}
+-keep class *{
+    @library.neetoffice.com.neetannotation.* <fields>;
+}
+-keepclassmembers  class *{
+    @library.neetoffice.com.neetannotation.* <methods>;
+    public  org.springframework.web.client.RestTemplate getRestTemplate();
+    public  void getRestTemplate(org.springframework.web.client.RestTemplate);
+    public  void setRootUrl(java.lang.String);
+}
+##----------------------------------
+-keepclassmembers class * {
+    @library.neetoffice.com.neetdao.DatabaseField <fields>;
+    @library.neetoffice.com.neetdao.Id <fields>;
+}

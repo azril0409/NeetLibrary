@@ -10,7 +10,7 @@ import android.view.MenuItem;
  * Created by Deo-chainmeans on 2017/4/29.
  */
 @NActivity
-public class AnnotationActivity extends AppCompatActivity {
+public abstract class AnnotationActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

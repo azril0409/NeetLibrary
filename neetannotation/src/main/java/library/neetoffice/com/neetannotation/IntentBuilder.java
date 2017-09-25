@@ -31,6 +31,7 @@ import java.util.Set;
  */
 public abstract class IntentBuilder {
     private final Bundle bundle = new Bundle();
+    private int mFlags;
 
     public final Bundle bundle() {
         Class<?> a = getClass();
@@ -143,136 +144,175 @@ public abstract class IntentBuilder {
                 putSerializable(n, (Serializable) o);
             }
         }
-
         return bundle;
     }
 
-    public void putBoolean(@Nullable String key, boolean value) {
+    public IntentBuilder putBoolean(@Nullable String key, boolean value) {
         bundle.putBoolean(key, value);
+        return this;
     }
 
-    public void putByte(@Nullable String key, byte value) {
+    public IntentBuilder putByte(@Nullable String key, byte value) {
         bundle.putByte(key, value);
+        return this;
     }
 
-    public void putChar(@Nullable String key, char value) {
+    public IntentBuilder putChar(@Nullable String key, char value) {
         bundle.putChar(key, value);
+        return this;
     }
 
-    public void putShort(@Nullable String key, short value) {
+    public IntentBuilder putShort(@Nullable String key, short value) {
         bundle.putShort(key, value);
+        return this;
     }
 
-    public void putInt(@Nullable String key, int value) {
+    public IntentBuilder putInt(@Nullable String key, int value) {
         bundle.putInt(key, value);
+        return this;
     }
 
-    public void putLong(@Nullable String key, long value) {
+    public IntentBuilder putLong(@Nullable String key, long value) {
         bundle.putLong(key, value);
+        return this;
     }
 
-    public void putFloat(@Nullable String key, float value) {
+    public IntentBuilder putFloat(@Nullable String key, float value) {
         bundle.putFloat(key, value);
+        return this;
     }
 
-    public void putDouble(@Nullable String key, double value) {
+    public IntentBuilder putDouble(@Nullable String key, double value) {
         bundle.putDouble(key, value);
+        return this;
     }
 
-    public void putString(@Nullable String key, @Nullable String value) {
+    public IntentBuilder putString(@Nullable String key, @Nullable String value) {
         bundle.putString(key, value);
+        return this;
     }
 
-    public void putCharSequence(@Nullable String key, @Nullable CharSequence value) {
+    public IntentBuilder putCharSequence(@Nullable String key, @Nullable CharSequence value) {
         bundle.putCharSequence(key, value);
+        return this;
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void putSize(@Nullable String key, @Nullable Size value) {
+    public IntentBuilder putSize(@Nullable String key, @Nullable Size value) {
         bundle.putSize(key, value);
+        return this;
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void putSizeF(@Nullable String key, @Nullable SizeF value) {
+    public IntentBuilder putSizeF(@Nullable String key, @Nullable SizeF value) {
         bundle.putSizeF(key, value);
+        return this;
     }
 
-    public void putParcelable(@Nullable String key, @Nullable Parcelable value) {
+    public IntentBuilder putParcelable(@Nullable String key, @Nullable Parcelable value) {
         bundle.putParcelable(key, value);
+        return this;
     }
 
-    public void putParcelableArray(@Nullable String key, @Nullable Parcelable[] value) {
+    public IntentBuilder putParcelableArray(@Nullable String key, @Nullable Parcelable[] value) {
         bundle.putParcelableArray(key, value);
+        return this;
     }
 
-    public void putBooleanArray(@Nullable String key, @Nullable boolean[] value) {
+    public IntentBuilder putBooleanArray(@Nullable String key, @Nullable boolean[] value) {
         bundle.putBooleanArray(key, value);
+        return this;
     }
 
-    public void putByteArray(@Nullable String key, @Nullable byte[] value) {
+    public IntentBuilder putByteArray(@Nullable String key, @Nullable byte[] value) {
         bundle.putByteArray(key, value);
+        return this;
     }
 
-    public void putShortArray(@Nullable String key, @Nullable short[] value) {
+    public IntentBuilder putShortArray(@Nullable String key, @Nullable short[] value) {
         bundle.putShortArray(key, value);
+        return this;
     }
 
-    public void putCharArray(@Nullable String key, @Nullable char[] value) {
+    public IntentBuilder putCharArray(@Nullable String key, @Nullable char[] value) {
         bundle.putCharArray(key, value);
+        return this;
     }
 
-    public void putIntArray(@Nullable String key, @Nullable int[] value) {
+    public IntentBuilder putIntArray(@Nullable String key, @Nullable int[] value) {
         bundle.putIntArray(key, value);
+        return this;
     }
 
-    public void putLongArray(@Nullable String key, @Nullable long[] value) {
+    public IntentBuilder putLongArray(@Nullable String key, @Nullable long[] value) {
         bundle.putLongArray(key, value);
+        return this;
     }
 
-    public void putFloatArray(@Nullable String key, @Nullable float[] value) {
+    public IntentBuilder putFloatArray(@Nullable String key, @Nullable float[] value) {
         bundle.putFloatArray(key, value);
+        return this;
     }
 
-    public void putDoubleArray(@Nullable String key, @Nullable double[] value) {
+    public IntentBuilder putDoubleArray(@Nullable String key, @Nullable double[] value) {
         bundle.putDoubleArray(key, value);
+        return this;
     }
 
-    public void putStringArray(@Nullable String key, @Nullable String[] value) {
+    public IntentBuilder putStringArray(@Nullable String key, @Nullable String[] value) {
         bundle.putStringArray(key, value);
+        return this;
     }
 
-    public void putCharSequenceArray(@Nullable String key, @Nullable CharSequence[] value) {
+    public IntentBuilder putCharSequenceArray(@Nullable String key, @Nullable CharSequence[] value) {
         bundle.putCharSequenceArray(key, value);
+        return this;
     }
 
-    public void putParcelableArrayList(@Nullable String key, @Nullable ArrayList<? extends Parcelable> value) {
+    public IntentBuilder putParcelableArrayList(@Nullable String key, @Nullable ArrayList<? extends Parcelable> value) {
         bundle.putParcelableArrayList(key, value);
+        return this;
     }
 
-    public void putIntegerArrayList(@Nullable String key, @Nullable ArrayList<Integer> value) {
+    public IntentBuilder putIntegerArrayList(@Nullable String key, @Nullable ArrayList<Integer> value) {
         bundle.putIntegerArrayList(key, value);
+        return this;
     }
 
-    public void putStringArrayList(@Nullable String key, @Nullable ArrayList<String> value) {
+    public IntentBuilder putStringArrayList(@Nullable String key, @Nullable ArrayList<String> value) {
         bundle.putStringArrayList(key, value);
+        return this;
     }
 
-    public void putCharSequenceArrayList(@Nullable String key, @Nullable ArrayList<CharSequence> value) {
+    public IntentBuilder putCharSequenceArrayList(@Nullable String key, @Nullable ArrayList<CharSequence> value) {
         bundle.putCharSequenceArrayList(key, value);
+        return this;
     }
 
-    public void putSparseParcelableArray(@Nullable String key, @Nullable SparseArray<? extends Parcelable> value) {
+    public IntentBuilder putSparseParcelableArray(@Nullable String key, @Nullable SparseArray<? extends Parcelable> value) {
         bundle.putSparseParcelableArray(key, value);
+        return this;
     }
 
-    public void putSerializable(@Nullable String key, @Nullable Serializable value) {
+    public IntentBuilder putSerializable(@Nullable String key, @Nullable Serializable value) {
         bundle.putSerializable(key, value);
+        return this;
     }
 
-    public void putAll(Bundle extras) {
+    public IntentBuilder putAll(Bundle extras) {
         bundle.putAll(extras);
+        return this;
     }
 
+    public IntentBuilder setFlags(int flags) {
+        mFlags = flags;
+        return this;
+    }
+
+    public IntentBuilder addFlags(int flags) {
+        mFlags = flags;
+        return this;
+    }
 
     /**
      * {@hide}
@@ -289,27 +329,36 @@ public abstract class IntentBuilder {
         return null;
     }
 
+    public static IntentBuilder newIntent() {
+        return new IntentBuilder() {
+        };
+    }
+
     public void startActivity(@NonNull final Context context, @NonNull final Class<? extends Activity> cls) {
         final Intent intent = new Intent(context, cls);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.startActivity(intent);
     }
 
     public void startActivity(@NonNull final Context context, @NonNull final String action) {
         final Intent intent = new Intent(action);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.startActivity(intent);
     }
 
     public void startActivityForResult(@NonNull Activity activity, @NonNull Class<? extends Activity> cls, int requestCode) {
         final Intent intent = new Intent(activity, cls);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         activity.startActivityForResult(intent, requestCode);
     }
 
     public void startActivityForResult(@NonNull Activity activity, @NonNull String action, int requestCode) {
         final Intent intent = new Intent(action);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -317,6 +366,7 @@ public abstract class IntentBuilder {
     public void startActivityForResult(@NonNull android.app.Fragment fragment, @NonNull Class<? extends Activity> cls, int requestCode) {
         final Intent intent = new Intent(fragment.getActivity(), cls);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         fragment.startActivityForResult(intent, requestCode);
     }
 
@@ -324,72 +374,98 @@ public abstract class IntentBuilder {
     public void startActivityForResult(@NonNull android.app.Fragment fragment, @NonNull String action, int requestCode) {
         final Intent intent = new Intent(action);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         fragment.startActivityForResult(intent, requestCode);
     }
 
     public void startActivityForResult(@NonNull android.support.v4.app.Fragment fragment, @NonNull Class<? extends Activity> cls, int requestCode) {
         final Intent intent = new Intent(fragment.getActivity(), cls);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         fragment.startActivityForResult(intent, requestCode);
     }
 
     public void startActivityForResult(@NonNull android.support.v4.app.Fragment fragment, @NonNull String action, int requestCode) {
         final Intent intent = new Intent(action);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         fragment.startActivityForResult(intent, requestCode);
     }
 
     public void setResult(@NonNull Activity activity) {
         final Intent intent = new Intent();
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         activity.setResult(Activity.RESULT_OK, intent);
     }
 
     public void setResult(@NonNull Activity activity, int resultCode) {
         final Intent intent = new Intent();
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         activity.setResult(Activity.RESULT_OK, intent);
     }
 
     public void startService(@NonNull final Context context, @NonNull Class<? extends Service> cls) {
         final Intent intent = new Intent(context, cls);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.startService(intent);
+    }
+
+    public void stopService(@NonNull final Context context, @NonNull Class<? extends Service> cls) {
+        final Intent intent = new Intent(context, cls);
+        intent.putExtras(bundle());
+        intent.setFlags(mFlags);
+        context.stopService(intent);
     }
 
     public void startService(@NonNull final Context context, @NonNull String action) {
         final Intent intent = new Intent(action);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.startService(intent);
+    }
+
+    public void stopService(@NonNull final Context context, @NonNull String action) {
+        final Intent intent = new Intent(action);
+        intent.putExtras(bundle());
+        intent.setFlags(mFlags);
+        context.stopService(intent);
     }
 
     public void bindService(@NonNull final Context context, @NonNull Class<? extends Service> cls, @NonNull ServiceConnection serviceConnection, int flags) {
         final Intent intent = new Intent(context, cls);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.bindService(intent, serviceConnection, flags);
     }
 
     public void sendBroadcast(@NonNull final Context context, @NonNull Class<? extends BroadcastReceiver> cls) {
         final Intent intent = new Intent(context, cls);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.sendBroadcast(intent);
     }
 
     public void sendBroadcast(@NonNull final Context context, @NonNull String action) {
         final Intent intent = new Intent(action);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.sendBroadcast(intent);
     }
 
     public void sendBroadcast(@NonNull final Context context, @NonNull Class<? extends BroadcastReceiver> cls, @Nullable String receiverPermission) {
         final Intent intent = new Intent(context, cls);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.sendBroadcast(intent, receiverPermission);
     }
 
     public void sendBroadcast(@NonNull final Context context, @NonNull String action, @Nullable String receiverPermission) {
         final Intent intent = new Intent(action);
         intent.putExtras(bundle());
+        intent.setFlags(mFlags);
         context.sendBroadcast(intent, receiverPermission);
     }
 }

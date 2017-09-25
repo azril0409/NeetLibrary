@@ -45,6 +45,8 @@ abstract class BindActivity {
                     BindField.bindResAnimation(a, g, a);
                     BindField.bindResLayoutAnimation(a, g, a);
                     BindField.bindSharedPreferences(a,g,a);
+                    BindField.bindHandler(a,g,a);
+                    BindField.bindSystemService(a,g,a);
                     BindExtra.bindExtra(a, g);
                     if (b != null) {
                         bindSaveInstance(a, b, g);

@@ -15,3 +15,15 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-dontwarn  android.os.**
+-keep class android.os.** { *;}
+-dontwarn java.**
+-dontwarn org.springframework.**
+-keep class org.springframework.** { *;}
+-keepattributes AnnotationDefault
+-keep public class *{
+    *;
+}
+-keep enum * {
+    *;
+}

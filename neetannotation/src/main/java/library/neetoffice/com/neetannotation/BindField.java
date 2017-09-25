@@ -1,13 +1,39 @@
 package library.neetoffice.com.neetannotation;
 
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.DownloadManager;
+import android.app.KeyguardManager;
+import android.app.NotificationManager;
+import android.app.SearchManager;
+import android.app.UiModeManager;
+import android.app.job.JobScheduler;
+import android.app.usage.NetworkStatsManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.hardware.SensorManager;
+import android.location.LocationManager;
+import android.media.AudioManager;
+import android.media.MediaRouter;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.Vibrator;
+import android.os.storage.StorageManager;
+import android.telephony.CarrierConfigManager;
+import android.telephony.SubscriptionManager;
+import android.telephony.TelephonyManager;
+import android.view.LayoutInflater;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.view.inputmethod.InputMethodManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -58,7 +84,7 @@ abstract class BindField {
         if (d == null) {
             return;
         }
-        final Class<?> f = b.getType();
+        Class<?> f = b.getType();
         Object h;
         final NBean k = f.getAnnotation(NBean.class);
         if (k != null && k.value() == Scope.Singleton) {
@@ -71,12 +97,26 @@ abstract class BindField {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        final Field[] i = f.getDeclaredFields();
-        for (Field j : i) {
-            bindBean(h, j, c);
-            bindRootContext(h, j, c);
-            BindRestService.bind(h, j);
-        }
+        do {
+            final Field[] i = f.getDeclaredFields();
+            for (Field j : i) {
+                bindBean(h, j, c);
+                bindRootContext(h, j, c);
+                bindApp(h, j, c);
+                bindResString(h, j, c);
+                bindResStringArray(h, j, c);
+                bindResBoolean(h, j, c);
+                bindResDimen(h, j, c);
+                bindResInteger(h, j, c);
+                bindResColor(h, j, c, c.getTheme());
+                bindResDrawable(h, j, c, c.getTheme());
+                bindSharedPreferences(h, j, c);
+                bindHandler(h, j, c);
+                bindSystemService(h, j, c);
+                BindRestService.bind(h, j);
+            }
+            f = f.getSuperclass();
+        } while (f != null);
     }
 
     static void bindRootContext(Object a, Field b, Context c) {
@@ -308,18 +348,90 @@ abstract class BindField {
             return;
         }
         final Class<?> f = b.getType();
-        final SharedPref g = f.getAnnotation(SharedPref.class);
+        final Object i = SharedPrefHelp.onCreate(c, f);
+        try {
+            AnnotationUtil.set(b, a, i);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void bindHandler(Object a, Field b, Context c) {
+        final Handler d = b.getAnnotation(Handler.class);
+        if (d == null) {
+            return;
+        }
+        final Class<?> f = b.getType();
+        final ThreadHandler g = f.getAnnotation(ThreadHandler.class);
         if (g == null) {
             return;
         }
-        final String name;
-        if (g.value() == Scope.Singleton) {
-            name = c.getApplicationContext().getClass().getSimpleName() + "_Pref";
-        } else {
-            name = a.getClass().getSimpleName() + "_Pref";
+        final Object i = Proxy.newProxyInstance(f.getClassLoader(), new Class<?>[]{f}, new HandlerInvocationHandler(a));
+        try {
+            AnnotationUtil.set(b, a, i);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
-        final SharedPreferences h = c.getSharedPreferences(name, Context.MODE_PRIVATE);
-        final Object i = Proxy.newProxyInstance(f.getClassLoader(), new Class<?>[]{f}, new SharedPrefInvocationHandler(c, h));
+    }
+
+    static void bindSystemService(Object a, Field b, Context c) {
+        final SystemService d = b.getAnnotation(SystemService.class);
+        if (d == null) {
+            return;
+        }
+        final Class<?> f = b.getType();
+        Object i = null;
+        if (WindowManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.WINDOW_SERVICE);
+        } else if (LayoutInflater.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        } else if (ActivityManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.ACTIVITY_SERVICE);
+        } else if (PowerManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.POWER_SERVICE);
+        } else if (AlarmManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.ALARM_SERVICE);
+        } else if (NotificationManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.NOTIFICATION_SERVICE);
+        } else if (KeyguardManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.KEYGUARD_SERVICE);
+        } else if (LocationManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.LOCATION_SERVICE);
+        } else if (SearchManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.SEARCH_SERVICE);
+        } else if (SensorManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.SENSOR_SERVICE);
+        } else if (StorageManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.STORAGE_SERVICE);
+        } else if (Vibrator.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.VIBRATOR_SERVICE);
+        } else if (ConnectivityManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.CONNECTIVITY_SERVICE);
+        } else if (WifiManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.WIFI_SERVICE);
+        } else if (AudioManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.AUDIO_SERVICE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && MediaRouter.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.MEDIA_ROUTER_SERVICE);
+        } else if (TelephonyManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.TELEPHONY_SERVICE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && SubscriptionManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && CarrierConfigManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.CARRIER_CONFIG_SERVICE);
+        } else if (InputMethodManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.INPUT_METHOD_SERVICE);
+        } else if (UiModeManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.UI_MODE_SERVICE);
+        } else if (DownloadManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.DOWNLOAD_SERVICE);
+        } else if (BatteryManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.BATTERY_SERVICE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && JobScheduler.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && NetworkStatsManager.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.NETWORK_STATS_SERVICE);
+        }
         try {
             AnnotationUtil.set(b, a, i);
         } catch (IllegalAccessException e) {

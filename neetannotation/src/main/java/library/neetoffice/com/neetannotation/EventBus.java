@@ -21,7 +21,6 @@ public abstract class EventBus {
             }
             final Class<?> c = subscriber.getClass();
             final HashMap<Class<?>, ArrayList<Method>> hashMap = new HashMap<>();
-            final HashMap<Class<?>, ArrayList<Method>> hashMap2 = new HashMap<>();
             final Method[] a = c.getDeclaredMethods();
             for (Method b : a) {
                 final Subscribe d = b.getAnnotation(Subscribe.class);

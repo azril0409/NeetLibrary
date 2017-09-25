@@ -35,6 +35,8 @@ abstract class BindBroadcastReceiver {
                     BindField.bindResAnimation(a, h, b);
                     BindField.bindResLayoutAnimation(a, h, b);
                     BindField.bindSharedPreferences(a, h, b);
+                    BindField.bindHandler(a, h, b);
+                    BindField.bindSystemService(a, h, b);
                     BindRestService.bind(a, h);
                 }
                 if (c != null) {

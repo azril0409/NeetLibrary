@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by Deo-chainmeans on 2017/4/29.
+ * Created by Deo-chainmeans on 2017/9/9.
  */
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface App {
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.TYPE,ElementType.METHOD,ElementType.FIELD,ElementType.CONSTRUCTOR})
+public @interface NotProguard {
 }

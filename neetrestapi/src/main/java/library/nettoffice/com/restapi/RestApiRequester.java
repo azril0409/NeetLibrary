@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 class RestApiRequester implements RestApiSupport {
     RestTemplate restTemplate = new RestTemplate();
-    final String rootUrl;
+    String rootUrl;
 
     RestApiRequester(RestApi restApi) {
         final Class<? extends HttpMessageConverter>[] converters = restApi.converters();
@@ -51,5 +51,10 @@ class RestApiRequester implements RestApiSupport {
     @Override
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    @Override
+    public void setRootUrl(String rootUrl) {
+        this.rootUrl = rootUrl;
     }
 }

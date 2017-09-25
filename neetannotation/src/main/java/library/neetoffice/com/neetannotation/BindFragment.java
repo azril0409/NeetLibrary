@@ -80,6 +80,8 @@ abstract class BindFragment {
                     BindField.bindResAnimation(a, g, a.getContext());
                     BindField.bindResLayoutAnimation(a, g, a.getContext());
                     BindField.bindSharedPreferences(a, g, a.getContext());
+                    BindField.bindHandler(a, g, a.getContext());
+                    BindField.bindSystemService(a, g, a.getContext());
                     BindExtra.bindArgument(a, g);
                     BindField.bindSaveInstance(a, g, w);
                     BindRestService.bind(a, g);

@@ -11,7 +11,7 @@ import java.lang.reflect.Modifier;
 /**
  * Created by Deo on 2016/4/6.
  */
-public class TextChangeListener implements TextWatcher {
+class TextChangeListener implements TextWatcher {
     final Object a;
     final Method b;
     final View l;

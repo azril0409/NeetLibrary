@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         minSdkVersion 9
@@ -19,15 +19,30 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.+'
 }
 
-def libname = 'NeetAnnotation_106.jar'
+def libname = 'NeetAnnotation_108.jar'
+def name = 'NeetAnnotation'
+
+def toPath = '../librarys/'+name+'/'
+def fromPath = 'build/intermediates/bundles/default/'
 task clearAar(type: Delete) {
-    delete '../librarys/NeetAnnotation/'
+    delete toPath
 }
 task makeAar(type: Copy) {
-    from('build/intermediates/bundles/release/')
-    into('../librarys/NeetAnnotation')
+    from(fromPath)
+    into(toPath)
     include('classes.jar')
     include('jni/**')
     rename('classes.jar', libname)
 }
-makeAar.dependsOn(clearAar, build)
+/*
+task makeJar(type: proguard.gradle.ProGuardTask, dependsOn: "build") {
+    // 未混淆的jar
+    injars fromPath+'classes.jar'
+    // 混淆后的jar路径
+    outjars toPath+libname
+    // 具体需要keep住的类
+    configuration 'proguard-rules.pro'
+}
+*/
+makeAar.dependsOn(clearAar, "build")
+

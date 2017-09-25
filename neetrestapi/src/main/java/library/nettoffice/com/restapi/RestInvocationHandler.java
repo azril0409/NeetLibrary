@@ -39,6 +39,9 @@ class RestInvocationHandler implements InvocationHandler {
         } else if ("setRestTemplate".equals(name) && args.length == 1 && args[0] instanceof RestTemplate) {
             restApiHelp.setRestTemplate((RestTemplate) args[0]);
             return null;
+        } else if ("setRootUrl".equals(name) && args.length == 1 && args[0] instanceof String) {
+            restApiHelp.setRootUrl((String) args[0]);
+            return null;
         }
 
 
@@ -60,20 +63,18 @@ class RestInvocationHandler implements InvocationHandler {
             final Annotation[][] t = method.getParameterAnnotations();
             for (int i = 0; i < t.length; i++) {
                 final Object arg = args[i];
-                for (Annotation[] v : t) {
-                    for (Annotation a : v) {
-                        if (a.annotationType() == Header.class) {
-                            httpHeaders.set(((Header) a).name(), arg.toString());
-                        }
-                        if (a.annotationType() == Cookie.class) {
-                            cookies.put(((Cookie) a).value(), arg.toString());
-                        }
-                        if (a.annotationType() == Path.class) {
-                            pathMap.put(((Path) a).value(), arg.toString());
-                        }
-                        if (a.annotationType() == Body.class) {
-                            body = arg;
-                        }
+                for (Annotation a : t[i]) {
+                    if (a.annotationType() == Header.class) {
+                        httpHeaders.set(((Header) a).name(), arg.toString());
+                    }
+                    if (a.annotationType() == Cookie.class) {
+                        cookies.put(((Cookie) a).value(), arg.toString());
+                    }
+                    if (a.annotationType() == Path.class) {
+                        pathMap.put(((Path) a).value(), arg.toString());
+                    }
+                    if (a.annotationType() == Body.class) {
+                        body = arg;
                     }
                 }
             }

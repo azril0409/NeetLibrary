@@ -85,7 +85,12 @@ class SQLiteHelper extends SQLiteOpenHelper {
                 } else {
                     throw new NeetSQLException("Id's type should String or Number( Integer or Long)");
                 }
-                sql.append(" PRIMARY KEY NOT NULL");
+                final AutoIncrement annotation = field.getAnnotation(AutoIncrement.class);
+                if (annotation != null) {
+                    sql.append(" PRIMARY KEY AUTOINCREMENT");
+                }else {
+                    sql.append(" PRIMARY KEY NOT NULL");
+                }
             } else if (databaseField != null) {
                 boolean notNull = databaseField.NotNull();
                 sql.append(Util.getColumnName(field));

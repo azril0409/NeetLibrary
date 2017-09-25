@@ -28,4 +28,12 @@ public interface Dao<E> {
     void create() throws NeetSQLException, SQLException;
 
     void drop() throws NeetSQLException, SQLException;
+
+    void beginTransaction();
+
+    void setTransactionSuccessful();
+
+    void endTransaction();
+
+    void execSQL(String sql) throws android.database.SQLException;
 }

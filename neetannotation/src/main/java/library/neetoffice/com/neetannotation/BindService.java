@@ -10,13 +10,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * Created by Deo on 2016/4/11.
  */
 public class BindService {
-    static void onStartCommand(Service a, Intent b) {
+    static void onCreate(Service a) {
         Class<?> d = a.getClass();
+        final ArrayList<Method> j = new ArrayList<>();
         do {
             final NService f = d.getAnnotation(NService.class);
             if (f != null) {
@@ -24,6 +26,7 @@ public class BindService {
                 for (Field h : g) {
                     BindField.bindBean(a, h, a);
                     BindField.bindRootContext(a, h, a);
+                    BindField.bindApp(a, h, a);
                     BindField.bindResString(a, h, a);
                     BindField.bindResStringArray(a, h, a);
                     BindField.bindResBoolean(a, h, a);
@@ -32,8 +35,35 @@ public class BindService {
                     BindField.bindResColor(a, h, a, a.getTheme());
                     BindField.bindResDrawable(a, h, a, a.getTheme());
                     BindField.bindSharedPreferences(a, h, a);
+                    BindField.bindHandler(a, h, a);
+                    BindField.bindSystemService(a, h, a);
                     BindRestService.bind(a, h);
                 }
+                final Method[] h = d.getDeclaredMethods();
+                for (Method i : h) {
+                    if (BindMethod.isAfterAnnotationMethod(i)) {
+                        j.add(i);
+                    }
+                }
+            }
+            d = d.getSuperclass();
+        } while (d != null);
+        for (int i = j.size() - 1; i >= 0; i--) {
+            try {
+                final Method k = j.get(i);
+                AnnotationUtil.invoke(k, a);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    static void onStartCommand(Service a, Intent b) {
+        Class<?> d = a.getClass();
+        do {
+            final NService f = d.getAnnotation(NService.class);
+            if (f != null) {
                 if (b != null) {
                     final Method[] i = d.getDeclaredMethods();
                     for (Method j : i) {

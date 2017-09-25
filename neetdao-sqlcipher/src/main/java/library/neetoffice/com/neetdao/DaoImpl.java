@@ -1,6 +1,7 @@
 package library.neetoffice.com.neetdao;
 
 import android.content.ContentValues;
+import android.database.SQLException;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -218,5 +219,29 @@ class DaoImpl<E> extends DatabaseManager implements Dao<E> {
     public void drop() {
         SQLiteHelper.dropTable(openDatabase(), modelClass);
         close();
+    }
+
+    @Override
+    public void beginTransaction() {
+        final SQLiteDatabase db = openDatabase();
+        db.beginTransaction();
+    }
+
+    @Override
+    public void setTransactionSuccessful() {
+        final SQLiteDatabase db = openDatabase();
+        db.setTransactionSuccessful();
+    }
+
+    @Override
+    public void endTransaction() {
+        final SQLiteDatabase db = openDatabase();
+        db.endTransaction();
+    }
+
+    @Override
+    public void execSQL(String sql) throws SQLException {
+        final SQLiteDatabase db = openDatabase();
+        db.execSQL(sql);
     }
 }

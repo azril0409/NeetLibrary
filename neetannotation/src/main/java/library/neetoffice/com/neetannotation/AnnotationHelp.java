@@ -2,6 +2,8 @@ package library.neetoffice.com.neetannotation;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Application;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -80,5 +82,17 @@ public class AnnotationHelp {
 
     public static void onReceive(@NonNull BroadcastReceiver broadcastReceiver, Context context, Intent intent) {
         BindBroadcastReceiver.onReceive(broadcastReceiver, context, intent);
+    }
+
+    public static void onCreate(@NonNull Service service) {
+        BindService.onCreate(service);
+    }
+
+    public static void onStartCommand(@NonNull Service service, @NonNull Intent intent) {
+        BindService.onStartCommand(service, intent);
+    }
+
+    public static void onCreate(@NonNull Application application) {
+        BindApplication.onCreate(application);
     }
 }
