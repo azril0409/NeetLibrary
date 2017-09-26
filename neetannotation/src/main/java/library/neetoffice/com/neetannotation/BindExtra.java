@@ -8,6 +8,12 @@ import android.os.Bundle;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Deo-chainmeans on 2017/5/21.
@@ -116,6 +122,10 @@ abstract class BindExtra {
             } else {
                 return f.getString(d);
             }
+        } else if (Set.class.isInstance(b.getType())) {
+            return new HashSet<>((ArrayList) f.get(d));
+        } else if (Collection.class.isInstance(b.getType())) {
+            return (ArrayList) f.get(d);
         } else {
             return f.get(d);
         }

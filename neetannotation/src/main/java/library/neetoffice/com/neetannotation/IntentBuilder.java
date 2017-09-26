@@ -22,6 +22,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -123,17 +124,20 @@ public abstract class IntentBuilder {
                 putStringArray(n, (String[]) o);
             } else if (o instanceof CharSequence[]) {
                 putCharSequenceArray(n, (CharSequence[]) o);
-            } else if (o instanceof ArrayList) {
-                System.out.println("ArrayList");
+            } else if (o instanceof Collection) {
                 final Class<?> t = getParameterizedType(f);
                 if (Parcelable.class.isAssignableFrom(t)) {
-                    putParcelableArrayList(n, (ArrayList<? extends Parcelable>) o);
+                    final ArrayList<? extends Parcelable> q = new ArrayList<>((Collection) o);
+                    putParcelableArrayList(n, q);
                 } else if (Integer.class.isAssignableFrom(t)) {
-                    putIntegerArrayList(n, (ArrayList<Integer>) o);
+                    final ArrayList<Integer> q = new ArrayList<>((Collection) o);
+                    putIntegerArrayList(n, q);
                 } else if (String.class.isAssignableFrom(t)) {
-                    putStringArrayList(n, (ArrayList<String>) o);
+                    final ArrayList<String> q = new ArrayList<>((Collection) o);
+                    putStringArrayList(n, q);
                 } else if (CharSequence.class.isAssignableFrom(t)) {
-                    putCharSequenceArrayList(n, (ArrayList<CharSequence>) o);
+                    final ArrayList<CharSequence> q = new ArrayList<>((Collection) o);
+                    putCharSequenceArrayList(n, q);
                 }
             } else if (o instanceof SparseArray) {
                 final Class<?> t = getParameterizedType(f);
@@ -320,8 +324,8 @@ public abstract class IntentBuilder {
     private final static Class<?> getParameterizedType(Field f) {
         final Type fc = f.getGenericType();
         if (fc != null && fc instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) fc;
-            Type[] types = pt.getActualTypeArguments();
+            final ParameterizedType pt = (ParameterizedType) fc;
+            final Type[] types = pt.getActualTypeArguments();
             if (types != null && types.length > 0) {
                 return (Class<?>) types[0];
             }
