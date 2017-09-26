@@ -122,10 +122,16 @@ abstract class BindExtra {
             } else {
                 return f.getString(d);
             }
-        } else if (Set.class.isInstance(b.getType())) {
-            return new HashSet<>((ArrayList) f.get(d));
-        } else if (Collection.class.isInstance(b.getType())) {
-            return (ArrayList) f.get(d);
+        } else if (HashSet.class == b.getType()) {
+            return new HashSet<>((Collection) f.get(d));
+        } else if (Set.class == b.getType()) {
+            return new HashSet<>((Collection) f.get(d));
+        } else if (ArrayList.class == b.getType()) {
+            return new ArrayList<>((Collection) f.get(d));
+        } else if (List.class == b.getType()) {
+            return new ArrayList<>((Collection) f.get(d));
+        } else if (Collection.class == b.getType()) {
+            return new ArrayList<>((Collection) f.get(d));
         } else {
             return f.get(d);
         }
