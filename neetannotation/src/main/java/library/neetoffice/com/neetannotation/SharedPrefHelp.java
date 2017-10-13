@@ -2,6 +2,7 @@ package library.neetoffice.com.neetannotation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import java.lang.reflect.Proxy;
 
@@ -16,13 +17,12 @@ public class SharedPrefHelp {
         if (g == null) {
             return null;
         }
-        final String name;
-        if (g.value() == Scope.Singleton) {
-            name = context.getApplicationContext().getClass().getSimpleName() + "_Pref";
+        final SharedPreferences h;
+        if (g.value() == SharedPref.Scope.Default) {
+            h = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         } else {
-            name = context.getClass().getSimpleName() + "_Pref";
+            h = context.getSharedPreferences(context.getClass().getSimpleName() + "_preferences", Context.MODE_PRIVATE);
         }
-        final SharedPreferences h = context.getSharedPreferences(name, Context.MODE_PRIVATE);
         final Object i = Proxy.newProxyInstance(SharedPrefInterface.getClassLoader(), new Class<?>[]{SharedPrefInterface}, new SharedPrefInvocationHandler(context, h));
         return (T) i;
     }

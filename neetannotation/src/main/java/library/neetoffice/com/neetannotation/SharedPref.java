@@ -12,5 +12,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface SharedPref {
-    Scope value() default Scope.Singleton;
+    Scope value() default Scope.Default;
+
+    enum Scope {
+        Default, Unique
+    }
 }

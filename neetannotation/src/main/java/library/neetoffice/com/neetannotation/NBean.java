@@ -13,4 +13,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface NBean {
     Scope value() default Scope.Default;
+
+    enum Scope {
+        Default, Singleton
+    }
 }

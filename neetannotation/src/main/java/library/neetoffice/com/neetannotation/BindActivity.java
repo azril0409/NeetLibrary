@@ -44,9 +44,9 @@ abstract class BindActivity {
                     BindField.bindResDrawable(a, g, a, a.getTheme());
                     BindField.bindResAnimation(a, g, a);
                     BindField.bindResLayoutAnimation(a, g, a);
-                    BindField.bindSharedPreferences(a,g,a);
-                    BindField.bindHandler(a,g,a);
-                    BindField.bindSystemService(a,g,a);
+                    BindField.bindSharedPreferences(a, g, a);
+                    BindField.bindHandler(a, g, a);
+                    BindField.bindSystemService(a, g, a);
                     BindExtra.bindExtra(a, g);
                     if (b != null) {
                         bindSaveInstance(a, b, g);
@@ -78,7 +78,12 @@ abstract class BindActivity {
         for (int i = j.size() - 1; i >= 0; i--) {
             try {
                 final Method k = j.get(i);
-                AnnotationUtil.invoke(k, a);
+                final Class<?>[] l = k.getParameterTypes();
+                if (l.length == 1 && b.getClass().isAssignableFrom(l[0])) {
+                    AnnotationUtil.invoke(k, a, b);
+                } else if (l.length == 0) {
+                    AnnotationUtil.invoke(k, a);
+                }
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

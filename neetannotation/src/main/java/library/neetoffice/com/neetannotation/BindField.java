@@ -87,7 +87,7 @@ abstract class BindField {
         Class<?> f = b.getType();
         Object h;
         final NBean k = f.getAnnotation(NBean.class);
-        if (k != null && k.value() == Scope.Singleton) {
+        if (k != null && k.value() == NBean.Scope.Singleton) {
             h = newStaticInstance(f, c);
         } else {
             h = newInstance(f, c);
@@ -431,6 +431,8 @@ abstract class BindField {
             i = c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && NetworkStatsManager.class.isAssignableFrom(f)) {
             i = c.getSystemService(Context.NETWORK_STATS_SERVICE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && JobScheduler.class.isAssignableFrom(f)) {
+            i = c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         }
         try {
             AnnotationUtil.set(b, a, i);

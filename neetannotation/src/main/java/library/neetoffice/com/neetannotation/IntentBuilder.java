@@ -407,7 +407,7 @@ public abstract class IntentBuilder {
         final Intent intent = new Intent();
         intent.putExtras(bundle());
         intent.setFlags(mFlags);
-        activity.setResult(Activity.RESULT_OK, intent);
+        activity.setResult(resultCode, intent);
     }
 
     public void startService(@NonNull final Context context, @NonNull Class<? extends Service> cls) {
