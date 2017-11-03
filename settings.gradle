@@ -1,1 +1,1 @@
-include ':androidcamerautil', ':xmlparser', ':neetdao', ':neetdaosample', ':neetannotation', ':neetdao-sqlcipher', ':neetrestapi'
+include ':androidcamerautil', ':xmlparser', ':neetdao', ':neetdaosample', ':neetdao-sqlcipher'

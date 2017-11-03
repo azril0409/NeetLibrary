@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 
     lintOptions {
         abortOnError false
@@ -32,7 +32,7 @@ task clearAar(type: Delete) {
     delete '../librarys/NeetDAO-sqlcipher/'
 }
 task makeAar(type: Copy) {
-    from('build/intermediates/bundles/default/')
+    from('build/intermediates/bundles/release/')
     into('../librarys/NeetDAO-sqlcipher')
     include('classes.jar')
     rename('classes.jar', libname)

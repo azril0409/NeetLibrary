@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 7
@@ -25,7 +25,7 @@ task clearAar(type: Delete) {
     delete '../librarys/xmlparser/'
 }
 task makeAar(type: Copy) {
-    from('build/intermediates/bundles/default/')
+    from('build/intermediates/bundles/release/')
     into('../librarys/xmlparser')
     include('classes.jar')
     include('jni/**')
