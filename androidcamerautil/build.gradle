@@ -17,17 +17,17 @@ android {
     }
 }
 
-def libname = 'AndroidcameraUtil_100.jar'
+def name = 'AndroidcameraUtil_100.jar'
+def to = "../librarys/"
 task clearAar(type: Delete) {
-    delete '../librarys/androidcamerautil/'
+    delete to+name
 }
 
 task makeAar(type: Copy) {
     from('build/intermediates/bundles/release/')
-    into('../librarys/androidcamerautil')
+    into(to)
     include('classes.jar')
-    include('jni/**')
-    rename('classes.jar', libname)
+    rename('classes.jar', name)
 }
 
 makeAar.dependsOn(clearAar, build)

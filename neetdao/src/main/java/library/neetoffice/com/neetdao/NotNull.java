@@ -6,10 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by Deo on 2016/3/4.
+ * Created by Deo-chainmeans on 2017/11/30.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface DatabaseField {
-    String value() default "";
+public @interface NotNull {
 }

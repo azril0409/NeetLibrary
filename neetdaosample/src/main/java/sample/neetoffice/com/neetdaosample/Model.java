@@ -18,10 +18,10 @@ public class Model implements Parcelable {
     @Id
     private Long id;
 
-    @DatabaseField(columnName = TITLE)
+    @DatabaseField( TITLE)
     private String title;
 
-    @DatabaseField(columnName = MESSAGE)
+    @DatabaseField( MESSAGE)
     private String message;
 
     public Model() {

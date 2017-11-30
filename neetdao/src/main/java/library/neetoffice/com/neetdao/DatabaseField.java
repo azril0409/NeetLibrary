@@ -11,7 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface DatabaseField {
-    String columnName() default "";
-
-    boolean NotNull() default false;
+    String value() default "";
 }

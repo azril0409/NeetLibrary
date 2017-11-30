@@ -64,6 +64,7 @@ class XMLParserHelper extends DefaultHandler {
     }
 
     private static void addFieldValue(Field field, Object object, String value) throws IllegalAccessException {
+        field.setAccessible(true);
         if (field.getType() == Boolean.class) {
             field.set(object, Boolean.valueOf(value.trim()));
         } else if (field.getType() == boolean.class) {
@@ -123,6 +124,7 @@ class XMLParserHelper extends DefaultHandler {
         } else if (field.getType() == String.class) {
             field.set(object, value.trim());
         }
+        field.setAccessible(false);
     }
 
     private void analyzeField(Object object, Field field, String xmlPath) throws XMLParserException {

@@ -25,20 +25,3 @@ dependencies {
     //https://www.zetetic.net/sqlcipher/sqlcipher-for-android/
     compile 'net.zetetic:android-database-sqlcipher:3.5.6@aar'
 }
-
-
-def libname = 'NeetDAO-sqlcipher_114.jar'
-task clearAar(type: Delete) {
-    delete '../librarys/NeetDAO-sqlcipher/'
-}
-task makeAar(type: Copy) {
-    from('build/intermediates/bundles/release/')
-    into('../librarys/NeetDAO-sqlcipher')
-    include('classes.jar')
-    rename('classes.jar', libname)
-    from('../neetdao-sqlcipher/')
-    include('jni/**')
-    include('assets/**')
-}
-
-makeAar.dependsOn(clearAar, build)

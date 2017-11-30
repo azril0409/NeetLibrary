@@ -24,16 +24,16 @@ android {
 dependencies {
 }
 
-def libname = 'NeetDAO_114.jar'
+def name = 'NeetDAO_115.jar'
+def to = "../librarys/"
 task clearAar(type: Delete) {
-    delete '../librarys/NeetDAO/'
+    delete to+name
 }
 task makeAar(type: Copy) {
     from('build/intermediates/bundles/release/')
-    into('../librarys/NeetDAO')
+    into(to)
     include('classes.jar')
-    include('jni/**')
-    rename('classes.jar', libname)
+    rename('classes.jar', name)
 }
 
 makeAar.dependsOn(clearAar, build)

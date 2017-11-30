@@ -92,7 +92,7 @@ class SQLiteHelper extends SQLiteOpenHelper {
                     sql.append(" PRIMARY KEY NOT NULL");
                 }
             } else if (databaseField != null) {
-                boolean notNull = databaseField.NotNull();
+                boolean notNull = field.isAnnotationPresent(NotNull.class);
                 sql.append(Util.getColumnName(field));
                 sql.append(" ");
                 if (field.getType() == Boolean.class) {

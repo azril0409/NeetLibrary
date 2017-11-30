@@ -16,10 +16,10 @@ public abstract class Util {
         if (databaseTable == null) {
             throw new NeetSQLException("No @DatabaseTable");
         }
-        if (databaseTable.tableName().length() == 0) {
+        if (databaseTable.value().length() == 0) {
             return modelClass.getSimpleName().toUpperCase();
         } else {
-            return databaseTable.tableName();
+            return databaseTable.value();
         }
     }
 
@@ -33,10 +33,10 @@ public abstract class Util {
                 return idField.value();
             }
         } else if (databaseField != null) {
-            if (databaseField.columnName().length() == 0) {
+            if (databaseField.value().length() == 0) {
                 return "_" + field.getName().toUpperCase();
             } else {
-                return databaseField.columnName();
+                return databaseField.value();
             }
         } else {
             throw new NeetSQLException("No @DatabaseField");

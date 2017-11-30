@@ -20,15 +20,15 @@ android {
 dependencies {
 }
 
-def libname = 'XMLParser_110.jar'
+def name = 'XMLParser_111.jar'
+def to = "../librarys/"
 task clearAar(type: Delete) {
-    delete '../librarys/xmlparser/'
+    delete to+name
 }
 task makeAar(type: Copy) {
     from('build/intermediates/bundles/release/')
-    into('../librarys/xmlparser')
+    into(to)
     include('classes.jar')
-    include('jni/**')
-    rename('classes.jar', libname)
+    rename('classes.jar', name)
 }
 makeAar.dependsOn(clearAar, build)
