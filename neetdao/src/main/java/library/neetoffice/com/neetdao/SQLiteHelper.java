@@ -88,7 +88,7 @@ class SQLiteHelper extends SQLiteOpenHelper {
                 final AutoIncrement annotation = field.getAnnotation(AutoIncrement.class);
                 if (annotation != null) {
                     sql.append(" PRIMARY KEY AUTOINCREMENT");
-                }else {
+                } else {
                     sql.append(" PRIMARY KEY NOT NULL");
                 }
             } else if (databaseField != null) {
@@ -165,6 +165,7 @@ class SQLiteHelper extends SQLiteOpenHelper {
                     if (cursor.moveToFirst()) {
                         do {
                             final ContentValues values = new ContentValues();
+                            list.add(values);
                             for (Field field : fields) {
                                 final String name = Util.getColumnName(field);
                                 final int index = cursor.getColumnIndex(name);

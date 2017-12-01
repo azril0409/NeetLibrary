@@ -36,4 +36,6 @@ public interface Dao<E> {
     void endTransaction();
 
     void execSQL(String sql) throws android.database.SQLException;
+
+    void rawQuery(String sql, String[] selectionArgs) throws android.database.SQLException;
 }

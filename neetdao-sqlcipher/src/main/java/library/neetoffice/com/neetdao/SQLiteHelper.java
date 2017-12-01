@@ -155,6 +155,7 @@ class SQLiteHelper extends SQLiteOpenHelper {
                     if (cursor.moveToFirst()) {
                         do {
                             final ContentValues values = new ContentValues();
+                            list.add(values);
                             for (Field field : fields) {
                                 final String name = Util.getColumnName(field);
                                 final int index = cursor.getColumnIndex(name);

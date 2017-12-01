@@ -42,4 +42,6 @@ public interface Dao<E> {
     void endTransaction();
 
     void execSQL(String sql) throws SQLException;
+
+    void rawQuery(String sql, String[] selectionArgs) throws SQLException;
 }

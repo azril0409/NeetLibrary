@@ -244,4 +244,10 @@ class DaoImpl<E> extends DatabaseManager implements Dao<E> {
         final SQLiteDatabase db = openDatabase();
         db.execSQL(sql);
     }
+
+    @Override
+    public void rawQuery(String sql, String[] selectionArgs) throws SQLException {
+        final SQLiteDatabase db = openDatabase();
+        db.rawQuery(sql,selectionArgs);
+    }
 }
