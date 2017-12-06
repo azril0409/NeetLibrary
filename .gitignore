@@ -5,3 +5,7 @@
 .DS_Store
 /build
 /captures
+neetdao/neetdao.iml
+neetdaosample/neetdaosample.iml
+neetdao-sqlcipher/neetdao-sqlcipher.iml
+xmlparser/xmlparser.iml

@@ -27,7 +27,7 @@ class DaoImpl<E> extends DatabaseManager implements Dao<E> {
         final ContentValues cv = new ContentValues();
         for (Field field : fields) {
             try {
-                if (field.getAnnotation(DatabaseField.class) != null || field.getAnnotation(Id.class) != null) {
+                if (field.isAnnotationPresent(DatabaseField.class) || field.isAnnotationPresent(Id.class)) {
                     field.setAccessible(true);
                     final Object value = field.get(entity);
                     field.setAccessible(false);
@@ -248,6 +248,6 @@ class DaoImpl<E> extends DatabaseManager implements Dao<E> {
     @Override
     public void rawQuery(String sql, String[] selectionArgs) throws SQLException {
         final SQLiteDatabase db = openDatabase();
-        db.rawQuery(sql,selectionArgs);
+        db.rawQuery(sql, selectionArgs);
     }
 }
